@@ -1,0 +1,57 @@
+.sponsor {
+    margin: 0 auto;
+   /* display: block;*/
+    margin-bottom: 20px
+}
+.hfloat {
+    float: right;
+    padding-right: 8px
+}
+
+ul.nav, ul.nav li a, #site_info .box {
+    background: #4D5873
+}
+
+ul.nav li:hover a,
+ul.nav li a:hover,
+ul.nav li a:focus {color:#fff; background:#4D5873;}
+ul.nav li a:active {color:#fff; background:#4D5873;}
+ul.nav li:hover ul {left:0;z-index:10}
+ul.nav li ul,
+ul.nav li:hover ul li a {color:#eee;}
+ul.nav li:hover ul li a:hover {color:#fff; background:#68779C;}
+ul.nav li:hover ul li a:active {color:#eee; background:#A6BCF2;}
+
+
+
+.box {
+    background: #F4F4F0
+}
+.box h2 a {
+    background: #333A4C
+}
+#tables th.table-head {
+    background: #46444F
+}
+#tables thead th {
+    background: #EEEDE9
+}
+#section-menu .menuitem {
+    background: #E4E4E4
+}
+#section-menu ul.section li li a {
+    background: #F4F4F0
+}
+#tables .fixed {
+	width: 25%
+}
+
+/*
+
+343B4C
+464F66
+4F5973
+7A8AB2
+A6BCF2
+
+*/
