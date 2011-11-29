@@ -9,7 +9,7 @@
 			<tbody>
 <?
 foreach($club as $i){
-	echo "<tr class='odd'><th><a href='#{$i['name']}'>{$i['name']}</a></th></tr>";	
+	echo "<tr class='odd'><th><a href='#{$i['last_name']}'>{$i['last_name']}</a></th></tr>";	
 }
 ?>
 	</tbody>
@@ -21,11 +21,14 @@ foreach($club as $i){
 <?
 // put in a special div here to hold them all
 foreach($club as $i){
-	echo "<div id='{$i['name']}' class='box'>";
-	echo "<h2>{$i['name']}</h2>";
+	echo "<div id='{$i['last_name']}' class='box'>";
+	echo "<h2>{$i['last_name']}</h2>";
     echo "<div class=\"block\">";
 	echo "<p>Contact phone: {$i['phone']}</p>";
-	echo "<p>Email: ".mailto($i['email'],$i['email'])."</p>";
+	echo "<p>Email: ".safe_mailto($i['email'],$i['email'])."</p>";
+    echo "Address: <address>{$i['address_1']} </br> ";
+    if ($i['address_2']) $i['address_2']."</br>";
+    echo "{$i['post_code']} </br> {$i['state']} </address>";
 	echo "<p>Description: {$i['description']}</p>";
 	echo "</div>";
     echo "</div>";

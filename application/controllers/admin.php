@@ -35,13 +35,12 @@ class Admin extends MY_Controller {
         return false;
     }
     function user($id = false){
-      //  var_dump($this->session->all_userdata());
-      if(!$id){
-      
         $this->db->select('users.uid, last_name, first_name, users.email, users.phone, users.licensed,clubs.short_name');
         $this->db->from('users');
         $this->db->order_by('users.last_name','desc');
         $this->db->join('clubs','users.clubid = clubs.clubid','left');
+      if(!$id){
+      
         if ($this->session->userdata('level') == 'club') {
             // Show users that belong to club
             $this->db->where('users.clubid',$this->session->userdata[]);
@@ -53,27 +52,36 @@ class Admin extends MY_Controller {
             $this->result = $this->db->get();
             $this->data['users'] = $this->result->result_array();
         }
-        var_dump($this->data['users']);
         foreach($this->data['users'] as &$v){
-            $v['last_name'] = anchor('admin/users/'.$v['uid'],$v['last_name']);
+            $v['last_name'] = anchor('admin/user/'.$v['uid'],$v['last_name']);
+            $v['email'] = mailto($v['email'],$v['email']);
+            unset($v['uid']);
         }
-        $this->table->set_template(array('id'=>'users'));
+        $this->table->set_template(array('table_open'=>'<table id="users" >'));
         $this->table->set_heading('Last Name','First Name','Email','Phone','Licensed','Club');
         $this->data['user_table'] = $this->table->generate($this->data['users']);
         $this->data['main_content'] .= $this->load->view('admin/admin_user_list',$this->data,true);
-     }else {
-        $this->db->from('users')->where('uid',$id);
-        $this->result = $this->db->get();
+     } else {
+        $this->db->where('uid',$id);
+        $this->result = $this->db->get(); 
         if($this->result->num_rows() > 0){
             // Show user info
-            echo form_fieldset('User stuff');
-            echo form_open('admin/admin/update_user');
-            echo "<p>";
-            echo form_label('First Name','fname');
-            echo form_input('fname');
-            echo "</p>";
-            echo form_close();
-            echo form_fieldset_close();
+            $this->data['users'] = $this->result->result_array();
+            foreach($this->data['users'] as $u) {
+                if($u['uid'] == $id){
+                    $this->data['user'] = $u;
+                    break;
+                }
+            }
+            if($this->session->userdata['level'] != 'club' || $this->session->userdata['clubid'] == $this->data['user']['clubid']) {
+                $this->data['main_content'] .= $this->load->view('admin/admin_user',$this->data,true);
+            } else {
+                // User is not in their club or they are not admin 
+                $this->data['main_content'] .= $this->load->view('admin/admin_user_error',$this->data,true);
+            }
+        } else {
+            $this->data['user'] = null;
+            $this->data['main_content'] .= $this->load->view('admin/admin_user',$this->data,true);
         }
      }
         $this->load->view('default',$this->data);

@@ -5,14 +5,15 @@
 </h2>
 	<div id="login-forms" class="block">
 		<?
-        echo form_fieldset("Logout",array('class'=>'login'));
         if($this->session->userdata('logged')){
+            echo form_fieldset("Logout",array('class'=>'login'));
             echo form_open('login/logout');
             echo "<p>";
             echo form_submit('Logout','Logout');
             echo "</p>";
         }
         else{
+            echo form_fieldset("Login",array('class'=>'login'));
             echo form_open('login');
             echo "<p>";
             echo form_label("Email","user");

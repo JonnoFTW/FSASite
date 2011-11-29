@@ -68,7 +68,7 @@ echo form_close();
 <div class="box">
  <h2>Websight</h2>
 <div class="block">
-This site is maintained by a team of expert monkeys
+Please contact <? echo safe_mailto('webmaster@fencingsa.org.au');?> with any details regarding the site. Please report all bugs and error messages to the above address.
 </div>
 </div>
 </div>

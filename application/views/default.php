@@ -62,7 +62,7 @@ echo $menu;
 <div class="clear"></div>
 <div class="grid_12" id="site_info">
 				<div class="box">
-					<p>FencingSA website created by <a href="http://2dev.net.au">2DEV INC</a>, all rights reserved. All content Copyright&copy; <? echo date("Y");?> </p>
+					<p>FencingSA website created by <a href="http://2dev.net.au">2DEV INC</a>, all rights reserved. All content Copyright&copy; <? echo date("Y") ?> <?echo img('assets/images/codeigniter.gif'); ?></p>
 				</div>
 </div>
 <div class="clear"></div>

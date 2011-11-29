@@ -10,7 +10,7 @@
     </ul>
     <h3><? echo anchor('admin/article','Pages'); ?></h3>
     <ul>
-     <? foreach($pages as $i){echo "<li>".anchor('admin/article/'.$i['title'],$i['title'])."</li>";} ?>
+     <? /*foreach($pages as $i){echo "<li>".anchor('admin/article/'.$i['title'],$i['title'])."</li>";} ?>
      <li><? echo anchor('admin/resources',"Resources"); ?></li>
      </ul>
      
