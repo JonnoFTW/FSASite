@@ -12,10 +12,10 @@ class Admin extends MY_Controller {
             $this->data['main_content'] = $this->load->view('admin/admin_side',$this->data,true);
         }
         $this->load->library('table');
+        $this->load->library('form_validation');
 	}
 	function index(){
-	//	$this->data['main_content']  = $this->load->view('admin/admin_user',$this->data,true);
-	//	$this->load->view('admin/admin',$this->data);
+		$this->data['main_content'] .= $this->load->view('admin/admin',$this->data,true);
 		$this->load->view('default',$this->data);
 	}
 	function enter(){ 
@@ -34,13 +34,32 @@ class Admin extends MY_Controller {
         //  -- news items
         return false;
     }
-    function user($id = false){
-        $this->db->select('users.uid, last_name, first_name, users.email, users.phone, users.licensed,clubs.short_name');
+    function page($page = false) {
+        echo "Not yet implemented";
+    }
+    function user($id = false,$filter = false) {
+        $this->db->select('short_name')->from('clubs');
+        $result = $this->db->get();
+        $clubs = array();
+        foreach($result->result_array() as $v) {
+            $clubs[$v['short_name']] = $v['short_name'];
+        }
+        $clubs[''] = '';
+        $this->data['clubs'] = $clubs;
         $this->db->from('users');
         $this->db->order_by('users.last_name','desc');
         $this->db->join('clubs','users.clubid = clubs.clubid','left');
-      if(!$id){
-      
+        $this->db->join('user_level','user_level.uid = users.uid','left');
+        if(!$id || $id == 'filter'){
+        $this->db->select('users.uid, last_name, first_name, users.email, users.phone, users.licensed,clubs.short_name as club');
+        if($id = 'filter') {
+            if($filter == 'licensed')
+                $this->db->where('users.licensed',date("Y"));
+            elseif($filter == 'unlicensed')
+                $this->db->where('users.licensed !=',date("Y"))->or_where('users.licensed IS NULL',null,false);
+            elseif($filter == 'clubs')
+                $this->db->where('users.uid = users.clubid',null,false);
+        }
         if ($this->session->userdata('level') == 'club') {
             // Show users that belong to club
             $this->db->where('users.clubid',$this->session->userdata[]);
@@ -61,8 +80,12 @@ class Admin extends MY_Controller {
         $this->table->set_heading('Last Name','First Name','Email','Phone','Licensed','Club');
         $this->data['user_table'] = $this->table->generate($this->data['users']);
         $this->data['main_content'] .= $this->load->view('admin/admin_user_list',$this->data,true);
-     } else {
-        $this->db->where('uid',$id);
+        $this->data['user'] = array(0);
+        $this->data['new_user'] = true;
+        $this->data['main_content'] .= $this->load->view('admin/admin_user',$this->data,true);
+        } else {
+        $this->db->select('users.uid, last_name, first_name, users.email, users.phone, users.licensed,clubs.short_name, users.address_1, users.address_1,users.address_2, users.suburb, users.post_code, users.state, clubs.short_name as club, user_level.level as level, user_level.note as note');
+        $this->db->where('users.uid',$id);
         $this->result = $this->db->get(); 
         if($this->result->num_rows() > 0){
             // Show user info
@@ -86,12 +109,67 @@ class Admin extends MY_Controller {
      }
         $this->load->view('default',$this->data);
     }
+    function update_user($id = false){
+        // Should create a user as well as update, because of brevity.
+        
+        // Only a an executive should be able to create new users.
+        $this->db->select('uid')->from('users');
+        if($this->session->userdata('level') == 'club'){
+            $this->db->where('users.clubid',$this->session->userdata('uid'));
+        }
+        $result = $this->db->get();
+        $users = $result->result_array();
+    //    var_dump($users);
+        $this->contains = 0;
+        foreach($users as $u){
+            if($id == $u['uid']){
+                $this->contains = 1;
+                break;
+            }
+        }
+        if($this->contains == 1) {
+            // Accept form and validate for current user level
+            $this->club = null;
+            if($this->input->post('club')) {
+                $this->db->from('clubs');
+                $this->db->where('short_name',$this->input('club'));
+                $this->result = $this->db->get();
+                $this->club = $this->result->row_array();
+            }
+            //check confirm new pword box
+            if($this->input->post('pass') && ($this->session->userdata('uid') == $id)){
+                //Check if they are even allowed to have a pass
+                if(true);
+            }
+            $vals = array(
+                'last_name'=>$this->input->post('last_name'),
+                'first_name'=>$this->input->post('first_name'),
+                'email'=>$this->input->post('email'),
+                'phone'=>$this->input->post('phone'),
+                'address_1'=>$this->input->post('addr1'),
+                'address_2'=>$this->input->post('addr2'),
+                'suburb'=>$this->input->post('suburb'),
+                'post_code'=>$this->input->post('post_code'),
+                'state'=>$this->input->post('state'), #mailing address out of state?!
+                'pass'=>encrypt($this->input->post('pass')),
+                'clubid'=> $this->club['clubid'], #get the clubid into here, from a query
+                'licensed'=>$this->input->post('licensed'), #should be a date("Y") thing, but only for admin
+            );
+            $this->update('users',$vals,array('uid',$id));
+        } else {
+            // Specify a valid user!
+            $this->data['user'] = null;
+            $this->data['main_content'] .= $this->load->view('admin/admin_user',$this->data,true);
+            
+        }
+        $this->load->view('default',$this->data);
+    }
     function resources(){
         if($this){
             // File is being uploaded
             $data = array(
                 'link'=>'form',
-                'description'=>'Some sheet',
+                'description'=>'Some worksheet',
                 'name'=>'Some name',
                 'type'=>'res or comp'
                 );
@@ -102,6 +180,5 @@ class Admin extends MY_Controller {
             $this->data['main_content'] .= $this->load->view('admin/form_upload',true);
         }
     }
-
 }
 ?>

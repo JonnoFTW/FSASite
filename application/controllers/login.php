@@ -20,7 +20,7 @@ class Login extends MY_Controller {
                                                    'logged'=>true,
                                                    'name'=>$user['first_name'].' '.$user['last_name'],
                                                    'clubid'=>$user['clubid'],
-                                                   'level'=>$user['level']
+                                                   'level'=>$user['level'],
                                                    ));   
                 redirect('admin');
             }
@@ -28,6 +28,7 @@ class Login extends MY_Controller {
                 $this->data['err'] = true;
             }
         } elseif ($this->input->post('user') xor $this->input->post('pass')){
+                // User didn't provide both inputs
                 $this->data['err'] = true;
         }
 		$this->data['main_content'] = $this->load->view('login',$this->data,true);

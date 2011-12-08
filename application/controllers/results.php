@@ -18,7 +18,10 @@ class Results extends MY_Controller {
 		}
 		else{
 			$this->data['result'] = $result->row_array(); // Table of competition results
-			$this->data['main_content'] .= $this->load->view('results/result',$this->data,true);
+            if(date() > $this->data['result']['date'])
+                $this->data['main_content'] .= $this->load->view('results/result',$this->data,true);
+            else
+                $this->data['main_content'] .= $this->load->view('results/entrants',$this->data,true);
 		}
 		$this->load->view('default',$this->data);
         

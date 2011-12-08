@@ -62,7 +62,16 @@ echo $menu;
 <div class="clear"></div>
 <div class="grid_12" id="site_info">
 				<div class="box">
-					<p>FencingSA website created by <a href="http://2dev.net.au">2DEV INC</a>, all rights reserved. All content Copyright&copy; <? echo date("Y") ?> <?echo img('assets/images/codeigniter.gif'); ?></p>
+					<p>FencingSA website created by <a href="http://2dev.net.au">2DEV INC</a>, all rights reserved. All content Copyright&copy; <? echo date("Y") ?> <?
+                        $attrs = array(
+                           'src'=>  'assets/images/codeigniter.png',
+                           'alt'=> 'This site is powered by CodeIgniter',
+                           'style'=> 'float:right;top: 50%;',
+                           'title'=>'This site is powered by CodeIgniter'
+                        );
+                        echo img($attrs);
+
+                        ?></p> 
 				</div>
 </div>
 <div class="clear"></div>

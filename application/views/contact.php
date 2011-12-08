@@ -1,4 +1,4 @@
-<div class="grid_4">
+<div class="grid_5">
 <div class="box">
 <h2>Fencing SA Executive Members</h2>
 <div class="block" id="tables">
@@ -29,7 +29,7 @@ foreach($mails as $i){
  </div>
  </div>
  </div>
- <div class="grid_8">
+ <div class="grid_7">
  <div class="box">
 	<h2>
 		<a href="#" id="toggle-login-forms">Send us an email enquiry</a>

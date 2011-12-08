@@ -58,10 +58,5 @@ class Calendar extends MY_Controller {
 		$this->load->view('default',$this->data);
         
     }
-    
-    private function _makeCalendar($query,$type){
-    
-    }
-
 }
 ?>

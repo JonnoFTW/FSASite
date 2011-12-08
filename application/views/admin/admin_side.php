@@ -1,24 +1,30 @@
 <div class="grid_3">
 <div class="box">
-   <h2>Manage</h2>
-    <h3><? echo anchor('admin/user','Users');?></h3>
-    <ul>
-        <? /* foreach($users as $i){
-            echo "<li>".anchor('admin/user/'.$i['uid'],$i['first_name']." ".$i['last_name'])."</li>";
-        }*/
-        ?>
-    </ul>
-    <h3><? echo anchor('admin/article','Pages'); ?></h3>
-    <ul>
-     <? /*foreach($pages as $i){echo "<li>".anchor('admin/article/'.$i['title'],$i['title'])."</li>";} ?>
-     <li><? echo anchor('admin/resources',"Resources"); ?></li>
-     </ul>
-     
-     <? /*
-    <h3><? echo anchor('admin/gallery','Gallery'); ?></h3>
-    <ul>
-     <? foreach($galleries as $i){echo "<li>".anchor('admin/gallery/'.$i['gid'],$i['title'])."</li>";} ?>
-     </ul>
-     */ ?>
+<?
+    echo heading('Manage',2);
+    echo "<div id=\"list-items\" class=\"block\">";
+    echo heading(anchor('admin/user','Users'),5);
+    $items = array(
+        anchor('admin/user/filter/all','All'),
+        anchor('admin/user/filter/licensed','Licensed'),
+        anchor('admin/user/filter/unlicensed','Unlicensed'),
+        anchor('admin/user/filter/clubs','Clubs')
+    );
+    echo ul($items,array('class'=>'menu'));
+    if($this->session->userdata('level') == 'executive') {
+        echo heading(anchor('admin/article','Pages'),5);
+        $pages = array(
+            anchor('admin/page/home','Home'),
+            anchor('admin/page/news','News'),
+            anchor('admin/page/calendar','Calendar'),
+            anchor('admin/page/clubs','Clubs'),
+            anchor('admin/page/forms','Forms and Resources')
+        );
+        echo ul($pages,array('class'=>'menu'));
+        echo heading(anchor('admin/result_entry','Results Entry'),5);
+    }
+    echo heading(anchor('admin/comp_entry','Competition Entry'),5);
+    echo "</div>";
+     ?>
 </div>
 </div>
