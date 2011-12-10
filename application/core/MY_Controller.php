@@ -25,11 +25,17 @@ class  MY_Controller  extends  CI_Controller  {
 		
 		//Links to pages
 		foreach($pages as $name => $i){
-			$out .= "<li>\n\t".anchor($i['link'],$name)."\n<ul>";
-			foreach($i['sub'] as $j){
-				$out .= "<li>".anchor($i['link'].'/type/'.url_title($j),$j)."</li>\n";
-			}
-			$out .= "</ul>\n</li>";
+			$out .= "<li>\n\t".anchor($i['link'],$name);
+            if ($i['sub']) {
+                $out .= "\n<ul>";
+                foreach($i['sub'] as $j){
+                    $out .= "\n<li>".anchor($i['link'].'/type/'.url_title($j),$j)."</li>";
+                }
+                $out .= "\n</ul>\n</li>";
+            }
+            else {
+                $out .= "</li>\n";
+            }
 		}
 		if($this->session->userdata('name')){
 			$out .= "<li class='secondary'>".anchor('admin',"Admin")."</li>\n";

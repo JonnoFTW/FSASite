@@ -114,14 +114,16 @@
 					</h2>
 					<div class="block" >
 						<p>FencingSA is grateful to the following sponsors:</p>
-                        <center>
                         <?
                             
                             foreach(array('Scotch','GSAORS','Be Active') as $key => $i){
-                                echo img(array('src'=>'assets/images/sponsor'.($key+1).".png",'title'=>$i,/*'class'=>'sponsor',*/'alt'=>$i))."\n";
+                                echo img(array(
+                                    'src'=>'assets/images/sponsor'.($key+1).".png",
+                                    'title'=>$i,
+                                    'style'=>'margin-left:auto;margin-right:auto;',
+                                    'alt'=>$i))."\n";
                             }
                         ?>
-                        </center>
 					</div>
 				</div>
 <!-- end sponsor block -->
@@ -146,7 +148,7 @@
 					<div class="block">
 						<div>
 							<div class="element atStart">
-								<h4>AFF Development Guidelines for Cadet & Junior Fencers</h4>
+								<h4>AFF Development Guidelines for Cadet &amp; Junior Fencers</h4>
 								<p>The AFF have published guidelines for cadet &amp; junior fencers to assist with development 
 of their training programs. The document is recommended reading for cadet &amp; junior fencers who are aiming for national representation and is available 
 <a href="http://ausfencing.org/files/%5B221%5D%20AFF%20Cadet%20and%20Junior%20Development%20Guidelines%20(Dec08).pdf">here</a>.
@@ -183,7 +185,7 @@ of their training programs. The document is recommended reading for cadet &amp; 
                                     <li> <a>U20 Mens Sabre </a> </li> 
 								</ul>
 							</li>
-							<li>
+                        </ul>
 					</div>
                 </div>
 			</div>

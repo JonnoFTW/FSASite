@@ -25,9 +25,9 @@ echo doctype('xhtml11');
 }
     </style>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-	<meta name="keywords" content="fencing, south australia, adelaide, competition, sport">
-	<meta name="description" content="Fencing SA is the governing body for the sport of fencing in South Australia, and manages the competitions, rules and organisation of fencing in South Australia">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+	<meta name="keywords" content="fencing, south australia, adelaide, competition, sport"/>
+	<meta name="description" content="Fencing SA is the governing body for the sport of fencing in South Australia, and manages the competitions, rules and organisation of fencing in South Australia"/>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 	<script type="text/javascript" src="<? echo base_url();?>assets/scripts/jquery-ui-1.8.14.custom.min.js"></script>
   </head>
 <body>

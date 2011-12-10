@@ -1,0 +1,21 @@
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed'); ?>
+
+ERROR - 2011-12-09 01:11:07 --> 404 Page Not Found --> bbs
+ERROR - 2011-12-09 01:11:12 --> 404 Page Not Found --> bbs
+ERROR - 2011-12-09 01:11:13 --> 404 Page Not Found --> bbs
+ERROR - 2011-12-09 01:11:15 --> 404 Page Not Found --> bbs
+ERROR - 2011-12-09 01:11:18 --> 404 Page Not Found --> bbs
+ERROR - 2011-12-09 01:11:28 --> 404 Page Not Found --> bbs
+ERROR - 2011-12-09 01:11:33 --> 404 Page Not Found --> bbs
+ERROR - 2011-12-09 01:11:48 --> 404 Page Not Found --> bbs
+ERROR - 2011-12-09 01:11:49 --> 404 Page Not Found --> bbs
+ERROR - 2011-12-09 01:11:50 --> 404 Page Not Found --> bbs
+ERROR - 2011-12-09 01:11:52 --> 404 Page Not Found --> bbs
+ERROR - 2011-12-09 01:11:53 --> 404 Page Not Found --> bbs
+ERROR - 2011-12-09 01:11:58 --> 404 Page Not Found --> bbs
+ERROR - 2011-12-09 01:12:01 --> 404 Page Not Found --> bbs
+ERROR - 2011-12-09 01:12:02 --> 404 Page Not Found --> bbs
+ERROR - 2011-12-09 01:12:03 --> 404 Page Not Found --> bbs
+ERROR - 2011-12-09 08:01:52 --> 404 Page Not Found --> robots.txt
+ERROR - 2011-12-09 08:01:54 --> 404 Page Not Found --> bbs
+ERROR - 2011-12-09 11:44:43 --> 404 Page Not Found --> robots.txt

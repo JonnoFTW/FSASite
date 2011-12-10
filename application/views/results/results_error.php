@@ -1,3 +1,3 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-echo "No results for the competition";
+echo "This competition has already run, there are no results recorded yet";
