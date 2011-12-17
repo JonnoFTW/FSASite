@@ -2,6 +2,7 @@
 class Admin extends MY_Controller {
     function __construct(){
 		parent::__construct();
+    //    var_dump($this->session->all_userdata());
 		$this->data['title'] = 'Administration';
         if(!$this->session->userdata('logged')){
             redirect('login');
@@ -35,8 +36,51 @@ class Admin extends MY_Controller {
         return false;
     }
     function page($page = false) {
-        echo "Not yet implemented";
+        if($this->session->userdata('level') != 'executive') {
+            // User does not have the right priviliges!
+        }
+        elseif($page == "home") {
+            // Update the front page
+        } elseif($page == "news") {
+            // Update the news
+            $this->data['main_content'] .= $this->load->view('admin/admin_news',$this->data,true);
+        } elseif($page == "calendar") {
+        
+        } elseif($page == "forms") {
+        
+        }
+        
+        else {
+            // Select a page/error
+        }
+        $this->load->view('default',$this->data);
     }
+
+    function add_news() {
+        // check user level
+        if($this->session->userdata['level'] != 'executive') {
+            echo 'You cannot add news items';
+            redirect('admin');
+        }
+        // validate input
+        if($this->input->post('title') && $this->input->post('Message')) {
+            $vars = array(
+                'title'=>htmlentities($this->input->post('title')),
+                'message'=>htmlentities($this->input->post('Message')),
+                'posted'=>date("Y-m-d H:i:s"),
+                'author'=>$this->session->userdata('uid')
+            );
+            $this->db->insert('news',$vars);
+            // show success view
+            $this->data['main_content'] .= $this->load->view('admin/admin_news_success',$this->data,true);
+        } else {
+            // show error view
+            $this->data['err'] = true;
+            $this->data['main_content'] .= $this->load->view('admin/admin_news',$this->data,true);
+        }
+        $this->load->view('default',$this->data);
+    }
+
     function user($id = false,$filter = false) {
         $this->db->select('short_name')->from('clubs');
         $result = $this->db->get();
