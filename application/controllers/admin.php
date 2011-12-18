@@ -1,4 +1,6 @@
-<?php  //  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php  
+
+if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class Admin extends MY_Controller {
     function __construct(){
 		parent::__construct();
@@ -45,7 +47,8 @@ class Admin extends MY_Controller {
             // Update the news
             $this->data['main_content'] .= $this->load->view('admin/admin_news',$this->data,true);
         } elseif($page == "calendar") {
-        
+            // Update or add calendar events
+            $this->data['main_content'] .= $this->load->view('admin/admin_events',$this->data,true);
         } elseif($page == "forms") {
         
         }
@@ -56,6 +59,11 @@ class Admin extends MY_Controller {
         $this->load->view('default',$this->data);
     }
 
+    function add_events() {
+        $this->data['events'] = array();
+        $this->data['main_content'] = $this->load->view('admin/add_events',$this->data,true);
+        $this->load->view('default',$this->data);
+    }
     function add_news() {
         // check user level
         if($this->session->userdata['level'] != 'executive') {

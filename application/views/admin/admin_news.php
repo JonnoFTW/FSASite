@@ -14,6 +14,7 @@ echo form_fieldset('Add news');
 if(isset($err)){
     echo "Be sure to include both a title and a message";
 }
+echo "Any URLs you place inside the message will be made into clickable links on the news page";
 echo "<p>";
 echo form_label('Title','title');
 echo form_input('title');

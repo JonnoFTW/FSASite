@@ -8,7 +8,7 @@ class News extends MY_Controller {
 		$this->data['main_content']  = $this->load->view('news/news_side',$this->data,true);
 	}
 	public function index()	{
-		$this->sql = "SELECT * FROM news, users WHERE news.author = users.uid ORDER BY posted";
+		$this->sql = "SELECT * FROM news, users WHERE news.author = users.uid AND YEAR(news.posted) = YEAR(NOW()) ORDER BY posted DESC";
 		$this->result = $this->db->query($this->sql);
 		$this->data['news_item'] = $this->result->result_array();
 		$this->data['main_content'] .= $this->load->view('news/news',$this->data,true);
