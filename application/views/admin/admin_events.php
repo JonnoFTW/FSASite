@@ -6,49 +6,88 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 <div class='box'>
 <script type="text/javascript">
 $(document).ready(function() {
-    $('input.date').datepicker({dateFormat:'yy-mm-dd'});
+    var form = $('div.event').html();
+    form = "<div class=\"event\">"+form+"</div>";
+  //  console.log(form);
+    $('input.date:text').live('focusin', function() {
+        var $this = $(this);
+        if(!$this.is('.hasDatepicker')) {
+            $this.datepicker({dateFormat: 'yy-mm-dd'});
+        }
+    });
     $("#event_add").click( function() {
-        $('#event').clone().insertAfter('#event');
-        $('input.date').removeClass('hasDatepicker').datepicker({dateFormat:'yy-mm-dd'});
+        console.log("Loading new event form");
+        $(form).insertAfter('.event:last');
+    });
+    $("form").submit( function() {
+        var events = [];
+        $("div.event").each(function(index) {
+            var buf = {};
+            $.each($(this).find(':input').serializeArray(), function(i,value) {
+                buf[value["name"]] = value["value"];
+            });
+            events.push(buf);
+        });
+      //  console.log(events);
+        jQuery.ajax({
+            url: "<? echo site_url("admin/add_events"); ?>",
+            type: "POST",
+            data: {"events":JSON.stringify(events)},
+           // dataType: "json",
+            success: function(data) {
+                console.log(data);
+                if(data == "Could not decode json!"){
+                    // We have an error, display the message
+                    console.log("Error");
+                    $("#event_error").html("<p>An error: "+data+"</p>").hide().fadeIn(500);
+                } else {
+                    // Success, tell the user this
+                    console.log("Success");
+                    $('#event_input').html(data).hide().fadeIn(1500);
+                }
+            }
+        });
+        return false;
     });
 });
 </script>
 <?
 echo heading("Add events",2);
-echo "<div class='block'>";
-
-echo form_open('admin/add_events');
+echo "<div id=\"event_input\" class='block'>";
+echo "<p>Only the Title field is optional. It will default to {Gender} {Category} {Weapon}. All other fields are mandatory.</p>";
+//echo form_open('admin/add_events');
+echo "<form action=\"javascript:alert('success')\">";
 echo form_fieldset("Add events");
 
-$loc = form_dropdown('location',array(
-    'l'=>'Local',
-    'e'=>'Events',
-    'n'=>'National',
-    'r'=>'Robyn Chaplin',
+$loc = form_dropdown('type',array(
+    'L'=>'Local',
+  //  'E'=>'Events',
+    'N'=>'National',
+    'R'=>'Robyn Chaplin',
 ),'l');
 $gender = form_dropdown('gender',array(
-    'm'=>'Mens',
-    'w'=>'Womens',
-    'o'=>'Mixed'
+    'M'=>'Mens',
+    'F'=>'Womens',
+    'O'=>'Mixed'
 ),'m');
 $weapon = form_dropdown('weapon',array(
-    'f'=>'Foil',
-    'e'=>'Epee',
-    's'=>'Sabre'
+    'Foil'=>'Foil',
+    'Epee'=>'Epee',
+    'Sabre'=>'Sabre'
 ),'f');
 $categories = form_dropdown('category',array(
-    'u11'=>'U11',
-    'u13'=>'U13',
-    'u15'=>'U15',
-    'u17'=>'U17',
-    'u20'=>'U20',
-    'n'=>'Novice',
-    'i'=>'Intermediate',
-    'o'=>'Open',
-    'v'=>'Veteran'
+    'U11'=>'U11',
+    'U13'=>'U13',
+    'U15'=>'U15',
+    'U17'=>'U17',
+    'U20'=>'U20',
+    'Novice'=>'Novice',
+    'Intermediate'=>'Intermediate',
+    'Open'=>'Open',
+    'Veteran'=>'Veteran'
 ),'o');
 
-echo "<div id='event'>";
+echo "<div class='event'>";
 echo "<p>";
 /*
 $table = array(
@@ -66,26 +105,31 @@ echo $gender;
 echo form_label("Category");
 echo $categories;
 echo form_label("Title");
-echo form_input("Title");
+echo form_input("name");
 echo form_label("Date (YYYY-MM-DD)");
-echo form_input(array("name"=>"Date","class"=>"date"));
+echo form_input(array("name"=>"date","class"=>"date"));
 echo form_label("Time (HH:MM)");
-echo form_input("Time");
+echo form_input("time");
 echo "</p>";
 echo "<hr/>";
 echo "</div>";
 echo "<a id=\"event_add\">Add another event</a></br>";
-echo form_submit("Submit","Submit");
+echo form_submit(array("name"=>"submit","value"=>"Submit","class"=>"submit"));
+echo "<div id=\"event_error\"></div>";
 echo form_fieldset_close();
 echo form_close();
 
 ?>
 </div>
+</div>
 
 <?
+/*
+<div class="block">
 echo heading("Manage existing events",2);
 
 // load the current events
+some more stuff down here
+</div>
+*/
 ?> 
-</div>
-</div>

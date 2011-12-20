@@ -21,18 +21,34 @@ $(document).ready(function() {
         },
         function() {
             $(this).find("td").removeClass("hovered");
-        }
-    );
+        });
+    
+    //add index column with all content.
+    $(".filterable tr:has(td)").each(function(){
+        var t = $(this).text().toLowerCase(); //all row text
+        $("<td class='indexColumn'></td>").hide().text(t).appendTo(this);
+    });//each tr
+    $("#filterText").keyup(function(){
+        var s = $(this).val().toLowerCase().split(" ");
+        //show all rows.
+        $(".filterable tr:hidden").show();
+        $.each(s, function(){
+            $(".filterable tr:visible .indexColumn:not(:contains('"+ this + "'))").parent().hide();
+        });
+    });
 });
 </script>
 <noscript>Please enable javascript to enable the search feature</noscript>
 <h2>Search Users</h2>
 <div class="block">
-Insert a search form here, to filter out users
+<form>
+    <label for="filter">Search users</label>
+    <input name="filterText" id="filterText" type="text"/>
+</form>
 </div>
-<div class="block">
+<div class="block filterable">
 <?
-echo "<h2>Current users are</h2>"; 
+echo heading("Current users are",2); 
 echo $user_table;
 ?>
 </div>

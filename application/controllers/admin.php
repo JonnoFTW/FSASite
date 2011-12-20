@@ -60,9 +60,24 @@ class Admin extends MY_Controller {
     }
 
     function add_events() {
-        $this->data['events'] = array();
-        $this->data['main_content'] = $this->load->view('admin/add_events',$this->data,true);
-        $this->load->view('default',$this->data);
+        //read in the incoming json
+        $events = json_decode($this->input->post('events'));
+        if(!$events) {
+            echo "Could not decode json!";
+            return;
+        }
+        // make sure all fields are valid
+        
+        // insert into db
+        
+        foreach($events as $i) {
+            $i['date'] .= ' '.$i['time'];
+            unset($i['time']);
+            $this->db->insert('events',$i);
+        }
+        // return success or failure
+        echo "success . Added ".count($events). " events</br>\n ";
+        var_dump($events);
     }
     function add_news() {
         // check user level
