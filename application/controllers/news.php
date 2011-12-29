@@ -3,7 +3,7 @@ class News extends MY_Controller {
 	function __construct(){
 		parent::__construct();
 		$this->data['title'] = 'News';
-        $this->result = $this->db->query('SELECT distinct(year(posted)) FROM news');
+        $this->result = $this->db->query('SELECT distinct(YEAR(posted)) as year FROM news');
         $this->data['years'] = $this->result->result_array();
 		$this->data['main_content']  = $this->load->view('news/news_side',$this->data,true);
 	}
@@ -14,6 +14,21 @@ class News extends MY_Controller {
 		$this->data['main_content'] .= $this->load->view('news/news',$this->data,true);
 		$this->load->view('default',$this->data);
 	}
+    public function year($year = false) {
+        if(checkdate(1,1,$year)) {
+            // A year was provided
+            $this->data['title'] .= ' for '.$year;
+            $this->db->join('users','users.uid = news.author');
+            $this->db->order_by("posted","desc");
+            $result = $this->db->get_where('news',array('year(posted)'=>$year));
+            $this->data['news_item'] = $result->result_array();
+            $this->data['main_content'] .= $this->load->view('news/news',$this->data,true);
+        } else {
+            // No year given!
+            $this->data['main_content'] .= $this->load->view('news/news_error',$this->data,true);
+        }
+		$this->load->view('default',$this->data);
+    }
     public function item($id = False){
 		//get news item of id from db otherwise show error
 		$this->sql = "SELECT * FROM news, users WHERE news.author = users.uid AND newsid='$id'";

@@ -16,8 +16,8 @@
         $pages = array(
             anchor('admin/page/home','Home'),
             anchor('admin/page/news','News'),
-            anchor('admin/page/calendar','Calendar'),
-            anchor('admin/page/clubs','Clubs'),
+            anchor('admin/event_result','Calendar'),
+            anchor('admin/page/results','Results'),
             anchor('admin/page/forms','Forms and Resources')
         );
         echo ul($pages,array('class'=>'menu'));

@@ -13,6 +13,7 @@ echo doctype('xhtml11');
 			echo link_tag("assets/css/layout.css")."\n";
 			echo link_tag("assets/css/nav.css")."\n";
 			echo link_tag("assets/css/fsa.css")."\n";	
+			echo link_tag("assets/css/ui-lightness/jquery-ui-1.8.16.custom.css")."\n";	
 			echo "<!--[if IE 6]>".link_tag("assets/css/ie6.css")."<![endif]-->\n";
 			echo "<!--[if IE 7]>".link_tag("assets/css/ie.css")."<![endif]-->\n";
 		?>

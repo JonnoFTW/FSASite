@@ -5,8 +5,21 @@
 			</h2>
             <div class="block">
 View news from year:
-<?
-echo form_dropdown('Years',$years[0]);
+<script type="text/javascript">
+$(document).ready(function() {
+    $('option').click( function() {
+        window.location = "<? echo base_url() ?>news/year/"+ $(this).text();
+    });
+});    
+</script>
+<? 
+$y = array();
+foreach($years as $i) {
+    $y[$i['year']] = $i['year'];
+}
+echo form_dropdown('Years',array_values($y));
+
+//var_dump($years);
 ?>
 </div>
 <div class="block" id="login-forms">

@@ -36,7 +36,7 @@ $(document).ready(function() {
            // dataType: "json",
             success: function(data) {
                 console.log(data);
-                if(data == "Could not decode json!"){
+                if(data.split(" ")[0] != "Success"){
                     // We have an error, display the message
                     console.log("Error");
                     $("#event_error").html("<p>An error: "+data+"</p>").hide().fadeIn(500);
@@ -45,7 +45,7 @@ $(document).ready(function() {
                     console.log("Success");
                     $('#event_input').html(data).hide().fadeIn(1500);
                 }
-            }
+            } 
         });
         return false;
     });
@@ -54,7 +54,7 @@ $(document).ready(function() {
 <?
 echo heading("Add events",2);
 echo "<div id=\"event_input\" class='block'>";
-echo "<p>Only the Title field is optional. It will default to {Gender} {Category} {Weapon}. All other fields are mandatory.</p>";
+echo "<p>Only the Title field is optional. It will default to {Category} {Gender} {Weapon}. All other fields are mandatory.</p>";
 //echo form_open('admin/add_events');
 echo "<form action=\"javascript:alert('success')\">";
 echo form_fieldset("Add events");
@@ -108,7 +108,7 @@ echo form_label("Title");
 echo form_input("name");
 echo form_label("Date (YYYY-MM-DD)");
 echo form_input(array("name"=>"date","class"=>"date"));
-echo form_label("Time (HH:MM)");
+echo form_label("Time (24 hrs HH:MM)");
 echo form_input("time");
 echo "</p>";
 echo "<hr/>";

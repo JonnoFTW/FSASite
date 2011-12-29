@@ -43,6 +43,7 @@ class Admin extends MY_Controller {
         }
         elseif($page == "home") {
             // Update the front page
+            $this->data['main_content'] .= $this->load->view('admin/admin_home',$this->data,true);
         } elseif($page == "news") {
             // Update the news
             $this->data['main_content'] .= $this->load->view('admin/admin_news',$this->data,true);
@@ -58,26 +59,76 @@ class Admin extends MY_Controller {
         }
         $this->load->view('default',$this->data);
     }
-
+    function event_result($id = False) {
+        if($id) {
+            // We have been blessed with an id
+            // Check if this event exists
+            $result = $this->db->select('events.event_id')->get('events');
+            $found = false;
+            foreach($result->restult_array() as $i){
+                if ($i['event_id']  == $id) {
+                    $found = true; 
+                    break;
+                }
+            }
+            if(!$found) {
+                // Show the list of events and a message saying that event doesn't exist
+            }
+            // Get all the entrants, tell the user they need to add someone 
+            // as an entrant before their result can be entered
+            $this->db->select('users.first_name , users.last_name, users.uid');
+            $result = $this->db->join('users','users.uid = entrants.uid')->get_where('entrants',array('event_id'=>$id));
+            $this->data['entrants'] = $this->table->generate($result);
+            $this->data['main_content'] .= $this->load->view('admin/admin_show_entrants',$this->data,true);
+        } else {
+            // Show list of events that have not been cancelled without entries
+            $this->data['main_content'] .= $this->load->view('admin/admin_show_events',$this->data,true);
+        }
+        $this->load->view('default',$data->true);
+    }
     function add_events() {
         //read in the incoming json
-        $events = json_decode($this->input->post('events'));
+        $events = json_decode($this->input->post('events'),true);
         if(!$events) {
             echo "Could not decode json!";
             return;
         }
         // make sure all fields are valid
-        
+        $out = '';
+        foreach($events as $k=>$i) {
+            if($i['date'] == "" or $i['time'] == ""){
+                $out .= "Please provide a valid date and time for event {$k}</br>"; 
+            } else {
+                $parts = explode("-",$i['date']);
+                if(!checkdate($parts[1],$parts[2],$parts[0]) || $i['date'] > date("Y-m-d")){
+                    $out .= "Please provide a valid date that is in the future for event {$k}</br>";
+                }
+                $parts = explode(':',$i['time']);
+                if(($parts[1] >= 59) || ($parts[0] >= 23) || !date('G:i', strtotime($i['time']))) {
+                    $out .= "Please provide a valid 24 hour time for event {$k}</br>";
+                }
+            }
+        }
+        if ($out != "") {
+            echo "No events were added.</br>";
+            echo $out;
+            return;
+        }
         // insert into db
         
-        foreach($events as $i) {
+        foreach($events as &$i) {
             $i['date'] .= ' '.$i['time'];
             unset($i['time']);
+            if($i['gender'] == "M") $i['gender'] = "Mens";
+            elseif ($i['gender'] == "F") $i['gender'] = "Womens";
+            elseif ($i['gender'] == "O") $i['gender'] = "Mixed";
+            if($i['name'] == "") 
+                $i['name'] = "{$i['category']} {$i['gender']} {$i['weapon']}";
             $this->db->insert('events',$i);
         }
         // return success or failure
-        echo "success . Added ".count($events). " events</br>\n ";
-        var_dump($events);
+        echo "Success . Added ".count($events). " events</br>\n ";
+      //  var_dump($events);
     }
     function add_news() {
         // check user level

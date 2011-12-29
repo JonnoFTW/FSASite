@@ -171,19 +171,17 @@ of their training programs. The document is recommended reading for cadet &amp; 
                 <div class="block" id="section-menu">
 						<ul class="section menu">
 							<li>
-								<a class="menuitem">6/08/2011 Local Competition</a>
-								<ul class="submenu">
-                                    <li> <a>Intermediate Womens Foil</a> </li>
-                                    <li> <a>Intermediate Mens Foil</a> </li>
-                                    <li> <a>U17 Mens Epee</a> </li>
-                                    <li> <a>U17 Womens Epee</a> </li>
-                                    <li> <a>U17 Womens Sabre</a> </li>
-                                    <li> <a>U17 Mens Sabre</a> </li>
-                                    <li> <a>U20 Mens Epee</a> </li>
-                                    <li> <a>U20 Womens Epee</a> </li>
-                                    <li> <a>U20 Womens Sabre</a> </li>
-                                    <li> <a>U20 Mens Sabre </a> </li> 
-								</ul>
+                                <?  
+                                    $upcoming = array();
+                                    foreach($events as $i) {
+                                        $d = explode(" ",$i['date']);
+                                        $upcoming[$d[0]][] = anchor('results/event/'.$i['event_id'],$i['name']);  
+                                    }
+                                    foreach($upcoming as $k=>$v) {
+                                        echo "<a class=\"menuitem\">{$k}</a>";
+                                        echo ul($v,array("class"=>'submenu'));
+                                    }
+                                ?>
 							</li>
                         </ul>
 					</div>
@@ -194,59 +192,41 @@ of their training programs. The document is recommended reading for cadet &amp; 
 					<h2>
 						<a href="#" id="toggle-search">Search</a>
 					</h2>
-					<div class="block" id="search">
+				<!--	<div class="block" id="search">
 						<form method="get" action="" class="search">
 							<p>
 								<input class="search text" name="value" type="text" />
 								<input class="search button" value="Search" type="submit" />
 							</p>
 						</form>
-					</div>
+					</div> -->
 				</div>
 				<div class="box articles">
 					<h2>
 						<a href="#" id="toggle-articles">Latest News</a>
 					</h2>
 					<div class="block" id="articles">
-						<div class="first article">
-							<h3>
-								<a href="#"><? echo $news[0]['title'] ?></a>
-							</h3>
-							<h4><? echo $news[0]['posted'] ?></h4>
-							<p class="meta">Reported by <? echo "{$news[0]['first_name']} {$news[0]['last_name']}" ?></p>
-							<!--<a href="#" class="image">
-								<img src="../../../img/photo_60x60.jpg" width="60" height="60" alt="photo" />
-							</a>-->
-                            <p>
-                            <? echo $news[0]['message'] ?>
-                            </p>
-						</div>
-						<div class="article">
-							<h3>
-								<a href="#"><? echo $news[1]['title'] ?></a>
-							</h3>
-							<h4><? echo $news[1]['posted'] ?></h4>
-							<p class="meta">Reported by <? echo "{$news[1]['first_name']} {$news[1]['last_name']}" ?></p>
-							<!--<a href="#" class="image">
-								<img src="../../../img/photo_60x60.jpg" width="60" height="60" alt="photo" />
-							</a>-->
-							<p> 
-								<? echo $news[1]['message'] ?>
-							</p>
-						</div>
-						<div class="article last">
-							<h3>
-								<a href="#"><? echo $news[2]['title'] ?></a>
-							</h3>
-							<h4><? echo $news[2]['posted'] ?></h4>
-							<p class="meta">Reported by<? echo "{$news[2]['first_name']} {$news[2]['last_name']}" ?></p>
-							<!--<a href="#" class="image">
-								<img src="../../../img/photo_60x60.jpg" width="60" height="60" alt="photo" />
-							</a>-->
-							<p>
-								<? echo $news[2]['message'] ?>
-							</p>
-						</div>
+                        <? 
+                            foreach($news as $k=>$i){
+                                switch($k) {
+                                    case 0:
+                                        echo "<div class=\"first article\">"; break;
+                                    case 1:
+                                        echo "<div class=\"article\">"; break;
+                                    case 2:
+                                        echo "<div class=\"last article\">"; break;
+                                }
+                                echo heading(anchor('news/item/'.$i['newsid'],$i['title']),3);
+                                echo heading($i['posted'],4);
+                                echo "<p class=\"meta\">Reported by {$i['first_name']} {$i['last_name']}</p>";
+                                echo "<p>";
+                              //  echo ellipsize(auto_link($i['message']),200,1);
+                             //   $i['message'] = auto_link($i['message']);
+                                echo auto_link(ellipsize($i['message'],200,1));
+                                echo "</p>";
+                                echo "</div>";
+                            }
+                        ?>
 					</div>
 				</div>
 			</div>
