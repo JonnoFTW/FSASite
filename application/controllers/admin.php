@@ -231,11 +231,10 @@ class Admin extends MY_Controller {
         // Should create a user as well as update, because of brevity.
         
         // Only a an executive should be able to create new users.
-        $this->db->select('uid')->from('users');
+        $result = $this->db->select('uid')->from('users')->get();
         if($this->session->userdata('level') == 'club'){
             $this->db->where('users.clubid',$this->session->userdata('uid'));
         }
-        $result = $this->db->get();
         $users = $result->result_array();
     //    var_dump($users);
         $this->contains = 0;

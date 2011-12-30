@@ -50,6 +50,7 @@ $(document).ready(function() {
 <?
 echo heading("Current users are",2); 
 echo $user_table;
+
 ?>
 </div>
 </div>

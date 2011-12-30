@@ -39,13 +39,11 @@ if($user == null){
         'State'=>     array('value'=>$user['state'],'name'=>'state'),
     );
 
+    echo "<p>";
     foreach($attrs as $k=>$v){
-        echo "<p>";
         echo form_label($k,$v['name']);
         echo form_input($v);
-        echo "</p>";
     } 
-    echo "<p>";
     echo form_label('Club','club');
     echo form_dropdown('club',$clubs,$user['club']);
     echo "</p>";
@@ -64,6 +62,10 @@ if($user == null){
                                                             // in the users table.
                                                             
         echo form_dropdown('type',$types,$user['level']);
+        if($user['level'] == 'executive'){
+            echo form_label('Note','note');
+            echo form_input('note');
+        }
         echo "</p>";
     }
     // Should be something about saving passwords in here too
