@@ -16,6 +16,15 @@ class Admin extends MY_Controller {
         }
         $this->load->library('table');
         $this->load->library('form_validation');
+        
+        $clubs = array();
+        $result = $this->db->get('clubs');
+        foreach($result->result_array() as $k=>$v){
+            $clubs[$v['clubid']] = $v['short_name'];
+        }
+        $clubs[''] = '';
+        $this->data['clubs'] = $clubs;
+        
 	}
 	function index(){
 		$this->data['main_content'] .= $this->load->view('admin/admin',$this->data,true);
@@ -51,7 +60,7 @@ class Admin extends MY_Controller {
             // Update or add calendar events
             $this->data['main_content'] .= $this->load->view('admin/admin_events',$this->data,true);
         } elseif($page == "forms") {
-        
+            // Add/update/delete the forms
         }
         
         else {
@@ -59,6 +68,32 @@ class Admin extends MY_Controller {
         }
         $this->load->view('default',$this->data);
     }
+    function licenses() {
+        // Show all users with their licenses,
+        if($this->session->userdata('level') != 'executive') {
+            // Not allowed!
+            $this->data['main_content'] .= $this->load->view('admin/admin_forbidden',$this->data,true);
+        } else {
+            $license_types = array(
+                'j'=>'junior',
+                's'=>'senior',
+                'c'=>'coach',
+                ''=>'');
+            $this->db->select('users.uid, users.first_name, users.last_name, users.licensed, users.license_type');
+            $this->db->join('clubs','clubs.clubid = users.uid','left')->where("clubs.clubid is null",NULL,FALSE);
+            $this->db->order_by('users.last_name','desc');
+            $result = $this->db->get('users');
+            $user_table = array();
+            $user_table[] = array('Last Name', 'First Name', 'Licensed for '.date("Y"), 'License Type');
+            foreach($result->result_array() as $v) {
+                $user_table[] = array($v['last_name'],$v['first_name'],form_checkbox('licensed','licensed',$v['licensed'] == date("Y")),form_dropdown('levels',$license_types,$v['license_type']));
+            }
+            $this->data['user_table'] = $this->table->generate($user_table);
+            $this->data['main_content'] .= $this->load->view('admin/admin_licenses',$this->data,true);
+        }
+        $this->load->view('default',$this->data);
+    }
+    
     function event_result($id = False) {
         if($id) {
             // We have been blessed with an id
@@ -158,12 +193,6 @@ class Admin extends MY_Controller {
     function user($id = false,$filter = false) {
         $this->db->select('short_name')->from('clubs');
         $result = $this->db->get();
-        $clubs = array();
-        foreach($result->result_array() as $v) {
-            $clubs[$v['short_name']] = $v['short_name'];
-        }
-        $clubs[''] = '';
-        $this->data['clubs'] = $clubs;
         $this->db->from('users');
         $this->db->order_by('users.last_name','desc');
         $this->db->join('clubs','users.clubid = clubs.clubid','left');
@@ -227,6 +256,66 @@ class Admin extends MY_Controller {
      }
         $this->load->view('default',$this->data);
     }
+    function new_user() {
+        // Add a new user!
+        $required = array("last_name","first_name","email","phone");
+        $vals = array(
+                'last_name'=>$this->input->post('last_name'),
+                'first_name'=>$this->input->post('first_name'),
+                'email'=>$this->input->post('email'),
+                'phone'=>$this->input->post('phone'),
+                'address_1'=>$this->input->post('addr1'),
+                'address_2'=>$this->input->post('addr2'),
+                'suburb'=>$this->input->post('suburb'), 
+                'post_code'=>$this->input->post('post_code'),
+                'state'=>$this->input->post('state'), #mailing address out of state?!
+            //    'pass'=>encrypt($this->input->post('pass')), HAve another page to manage passwords
+                'clubid'=> $this->input->post('clubid'), #get the clubid into here, from a query
+           //     'licensed'=>$this->input->post('licensed'), #should be a date("Y") thing, but only for admin
+        );
+        if($this->session->userdata('level') != 'executive'){
+            echo "You cannot make new clubs or executives!";
+            return;
+        }
+        $err = false;
+        if(!filter_var($vals['email'],FILTER_VALIDATE_EMAIL)){
+            echo "Please provide a properly formatted email";
+            $err = true;
+        }
+        foreach($required as $v){
+            if(!$vals[$v]) {
+                echo "Please provide a {$v}</br>";
+                $err = true;
+            }
+        }
+        var_dump($vals);
+        if($vals['clubid'] || !array_key_exists($vals['clubid'],$this->data['clubs'])) {
+            echo "Please select a valid club</br>";
+            $err = true;
+        }
+        if(!$err){
+            if($this->input('type') == 'club') {
+                if($this->input('short_name') && $this->input('description')){
+                    $this->db->insert('users',$vals);
+                    $this->db->insert('clubs',array("clubid"=>$this->db->insert_id(),"short_name"=>$this->input('short_name'),"description"=>$this->input('description')));
+                } else {
+                    echo "Please provide a short name and description for the club</br>";
+                }
+            } else {
+                $this->db->insert('users',$vals);
+                echo "Success! User was created";
+            }
+            // If user to be made is a club, insert them into the clubs as well, 
+            // allong with the stuff which should be done when making a club
+        }
+        else
+            echo "User was not created<br/>";
+    }
+    
+    function delete_user($id = false) {
+        // Delete a user, 
+    }
+    
     function update_user($id = false){
         // Should create a user as well as update, because of brevity.
         

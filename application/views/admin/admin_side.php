@@ -12,11 +12,15 @@
     );
     echo ul($items,array('class'=>'menu'));
     if($this->session->userdata('level') == 'executive') {
+        echo anchor('admin/licenses','Manage licenses');
         echo heading(anchor('admin/article','Pages'),5);
         $pages = array(
             anchor('admin/page/home','Home'),
             anchor('admin/page/news','News'),
-            anchor('admin/event_result','Calendar'),
+            "Calendar"=>array(
+                anchor('admin/page/calendar','Add events'),
+                anchor('calendar','Update events')
+             ),
             anchor('admin/page/results','Results'),
             anchor('admin/page/forms','Forms and Resources')
         );

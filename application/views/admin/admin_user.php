@@ -8,6 +8,32 @@ if($user == null){
     if(!isset($new_user)){
         $new_user = false;
     }
+    ?>
+<script type="text/javascript">
+$(document).ready(function() {
+    $("form").submit( function() {
+        jQuery.ajax({
+            url: "<? if($new_user) echo site_url("admin/new_user"); else echo site_url("admin/update_user");?>",
+            type: "POST",
+            data: $(this).serialize() ,
+            success: function(data) {
+                console.log(data);
+                if(data.split(" ")[0] != "Success"){
+                    // We have an error, display the message
+                    console.log("Error");
+                    $("#input_error").html("<p>An error: </br>"+data+"</p>").hide().fadeIn(500);
+                } else {
+                    // Success, tell the user this
+                    console.log("Success");
+                    $('#forms').html(data).hide().fadeIn(1500);
+                }
+            } 
+        });
+        return false;
+    });
+});
+</script>
+    <?
     if($new_user) {
         $user = array();
         $user['type'] = 2;
@@ -19,10 +45,15 @@ if($user == null){
         echo heading(" {$user['first_name']} {$user['last_name']}",2);
     }
     echo "<div id='forms' class='block'>";
-    if($new_user) 
+    echo "<form>";
+  /*  if($new_user) 
         echo form_open('admin/new_user/');
     else
         echo form_open('admin/update_user/'.$user['uid']);
+        */
+    ?>
+        <div id="input_error"></div>
+    <?
     echo form_fieldset("Edit User");
     $fields = array(
         "First"=>"f_name"
