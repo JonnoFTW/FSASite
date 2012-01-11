@@ -22,7 +22,8 @@
                 anchor('calendar','Update events')
              ),
             anchor('admin/page/results','Results'),
-            anchor('admin/page/forms','Forms and Resources')
+            anchor('admin/page/forms','Forms and Resources'),
+            anchor('admin/rules/','Rules')
         );
         echo ul($pages,array('class'=>'menu'));
         echo heading(anchor('admin/result_entry','Results Entry'),5);
