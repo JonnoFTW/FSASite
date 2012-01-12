@@ -21,7 +21,7 @@ echo form_input('title');
 echo "</p>";
 echo "<p>";
 echo form_label('Message','message');
-echo form_textarea('Message');
+echo form_textarea(array("name"=>'Message',"cols"=>78));
 echo "</p>";
 echo form_submit('news','Submit');
 echo form_fieldset_close();

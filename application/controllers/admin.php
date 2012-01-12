@@ -94,33 +94,58 @@ class Admin extends MY_Controller {
         $this->load->view('default',$this->data);
     }
     
-    function event_result($id = False) {
+    function result_entry($id = False) {
         if($id) {
             // We have been blessed with an id
             // Check if this event exists
-            $result = $this->db->select('events.event_id')->get('events');
+            $result = $this->db->select('events.event_id,name, date')->get('events');
             $found = false;
-            foreach($result->restult_array() as $i){
+            foreach($result->result_array() as $i){
                 if ($i['event_id']  == $id) {
                     $found = true; 
+                    $this->data['name'] = $i['name'].' '. $i['date'];
+                    $this->data['event_id'] = $i['event_id'];
                     break;
                 }
             }
             if(!$found) {
                 // Show the list of events and a message saying that event doesn't exist
+                $this->data['warning'] = "No such event exists!";
+                goto err;
+            } else {
+                // Get all the entrants, tell the user they need to add someone 
+                // as an entrant before their result can be entered
+                $this->db->select('users.first_name , users.last_name, users.uid, users.licensed');
+                $result = $this->db->join('users','users.uid = entrants.uid')->get_where('entrants',array('event_id'=>$id));
+                $table = array();
+                $this->table->set_heading(array("Name","Position","Licensed?"));
+                foreach($result->result_array() as $v) {
+                    $table[] = array("{$v['first_name']} {$v['last_name']}",form_input($v['uid']),$v['licensed'] == date("Y"));
+                }
+                $this->data['entrants'] = $this->table->generate($table);
+                
+                $this->data['main_content'] .= $this->load->view('admin/enter_results',$this->data,true);
             }
-            // Get all the entrants, tell the user they need to add someone 
-            // as an entrant before their result can be entered
-            $this->db->select('users.first_name , users.last_name, users.uid');
-            $result = $this->db->join('users','users.uid = entrants.uid')->get_where('entrants',array('event_id'=>$id));
-            $this->data['entrants'] = $this->table->generate($result);
-            $this->data['main_content'] .= $this->load->view('admin/admin_show_entrants',$this->data,true);
         } else {
             // Show list of events that have not been cancelled without entries
-            $this->data['main_content'] .= $this->load->view('admin/admin_show_events',$this->data,true);
+            err:
+            
+            $res = $this->db->select('events.event_id, events.name, events.date')->order_by('date',"desc")->join('results','results.event_id = events.event_id','left outer')->where('results.event_id IS NULL',null,false)->get('events');
+            $this->data['events'] = $res->result_array();
+            $this->data['main_content'] .= $this->load->view('admin/show_events',$this->data,true);
         }
-        $this->load->view('default',$data->true);
+        $this->load->view('default',$this->data);
     }
+    
+    function add_event_result() {
+        // get the input
+        // should be able to take files etc.
+        
+        // validate input
+        
+        //insert the result
+    }
+    
     function add_events() {
         //read in the incoming json
         $events = json_decode($this->input->post('events'),true);
@@ -388,28 +413,33 @@ class Admin extends MY_Controller {
     }
     
     function rules($rule = false) {
-        $res = $this->db->get("rules");
-        $this->data['rules'] = $res->result_array();
-        
-        if(!$rule) {
-            // Show all the rules
-            $this->data['main_content'] .= $this->load->view('admin/list_rules',$this->data,true);
-        } else {
-            //check the rule to edit actually exists!
-            foreach($this->data['rules'] as $v) {
-                if($rule == $v['id']){ 
-                    $this->data['rule'] = $v['id'];
-                    break;
-                }
-            }
-            if(isset($this->data['rule'])){
-                // Load the rule into a form view
-                $this->data['main_content'] .= $this->load->view('admin/update_rule',$this->data,true);
-            } else {
-                $this->data['warning'] = "No such rule exists!";
-                $this->data['main_content'] .= $this->load->view('admin/list_rules',$this->data,true);
-            }
+        if($this->session->userdata('level') != "executive") {
+            $this->data['main_content'] .= "You are not permitted to access this!";
             
+        } else {
+            $res = $this->db->get("rules");
+            $this->data['rules'] = $res->result_array();
+            
+            if(!$rule) {
+                // Show all the rules
+                $this->data['main_content'] .= $this->load->view('admin/list_rules',$this->data,true);
+            } else {
+                //check the rule to edit actually exists!
+                foreach($this->data['rules'] as $v) {
+                    if($rule == $v['id']){ 
+                        $this->data['rule'] = $v['id'];
+                        break;
+                    }
+                }
+                if(isset($this->data['rule'])){
+                    // Load the rule into a form view
+                    $this->data['main_content'] .= $this->load->view('admin/update_rule',$this->data,true);
+                } else {
+                    $this->data['warning'] = "No such rule exists!";
+                    $this->data['main_content'] .= $this->load->view('admin/list_rules',$this->data,true);
+                }
+                
+            }
         }
         $this->load->view('default',$this->data);
     }
@@ -418,6 +448,7 @@ class Admin extends MY_Controller {
         // Read in the JSON and update
         if($info = $this->input->post('rule')){
             $vars = array();
+          //  var_dump($info);
             foreach($info as $v) {
                 $vars[$v["name"]] = $v["value"];
             }
@@ -431,19 +462,20 @@ class Admin extends MY_Controller {
                 }
             }
             if($valid){
-                $this->db->update('rules',$vars,array("id"=>$vars['id']));
+                $id = $vars['id'];
+                unset($vars['id']);
+                $this->db->update('rules',$vars,array("id"=>$id));
+               // echo $this->db->last_query();
                 echo "success";
             }
             else {
                 echo "Rule was not updated";
             }
-            
         } else {
             // error
             var_dump($this->input->post('rule'));
             echo "There was an error!";
         }   
-        
     }
 }
 ?>

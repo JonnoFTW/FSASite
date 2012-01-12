@@ -7,9 +7,10 @@
 // Ajax in the form
 $(document).ready(function() {
     $("form").submit( function(event) {
-        event.preventDefault();
         console.log("form submitted");
+        nicEditors.findEditor('description').saveContent();
         var rule = $(this).serializeArray();
+        event.preventDefault();
         jQuery.ajax({
             url: "<? echo site_url("admin/update_rule"); ?>",
             type: "POST",
@@ -31,7 +32,12 @@ echo heading("Updating Rule",2);
 ?>
 <div id="rule_update" class="block">
 <?
-$rule = $rules[$rule];
+foreach($rules as $v) {
+    if($v['id'] == $rule){
+        $rule = $v;
+        break;
+    }
+}
 echo "<form action=\"javascript:alert('Success!')\">";
 echo form_fieldset("Updating Rule");
 echo form_hidden('id',$rule['id']);
@@ -43,7 +49,7 @@ echo form_label("Brief description");
 echo form_input("brief",$rule['brief']);
 
 echo form_label("Full description");
-echo form_textarea("description",$rule['description']);
+echo form_textarea(array("name"=>"description","value"=>$rule['description'],"cols"=>78,"id"=>"description")); // should be 78 cols wide
 echo "</p>";
 echo form_submit("submit","Submit");
 ?>

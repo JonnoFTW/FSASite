@@ -10,25 +10,29 @@
         anchor('admin/user/filter/unlicensed','Unlicensed'),
         anchor('admin/user/filter/clubs','Clubs')
     );
+    if($this->session->userdata('level') == 'executive')
+        $items[] = anchor('admin/licenses','Manage licenses');
     echo ul($items,array('class'=>'menu'));
+    $items = array();
     if($this->session->userdata('level') == 'executive') {
-        echo anchor('admin/licenses','Manage licenses');
-        echo heading(anchor('admin/article','Pages'),5);
+        echo heading('Pages',5);
         $pages = array(
             anchor('admin/page/home','Home'),
             anchor('admin/page/news','News'),
-            "Calendar"=>array(
+            heading("Calendar",5)=>array(
                 anchor('admin/page/calendar','Add events'),
                 anchor('calendar','Update events')
              ),
-            anchor('admin/page/results','Results'),
             anchor('admin/page/forms','Forms and Resources'),
             anchor('admin/rules/','Rules')
         );
         echo ul($pages,array('class'=>'menu'));
-        echo heading(anchor('admin/result_entry','Results Entry'),5);
+        $items[] = anchor('admin/result_entry','Results Entry');
     }
-    echo heading(anchor('admin/comp_entry','Competition Entry'),5);
+    
+    $items[] = anchor('admin/comp_entry','Competition Entry');
+    echo heading("Events",5);
+    echo ul($items,array('class'=>'menu'));
     echo "</div>";
      ?>
 </div>
