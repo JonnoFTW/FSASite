@@ -32,7 +32,7 @@ class Admin extends MY_Controller {
 	}
     
     private function _get_unentered() {
-        $res = $this->db->select('events.event_id, events.name, events.date')->order_by('date',"desc")->join('results','results.event_id = events.event_id','left outer')->where('results.event_id IS NULL',null,false)->get('events');
+        $res = $this->db->select('events.event_id, events.name, events.date')->order_by('date',"desc")->join('results','results.event_id = events.event_id','left outer')->where('`results`.`event_id` IS NULL',null,false)->get('events');
         return $res->result_array();
     }
 	function enter(){ 
@@ -85,7 +85,7 @@ class Admin extends MY_Controller {
                 'c'=>'coach',
                 ''=>'');
             $this->db->select('users.uid, users.first_name, users.last_name, users.licensed, users.license_type');
-            $this->db->join('clubs','clubs.clubid = users.uid','left')->where("clubs.clubid is null",NULL,FALSE);
+            $this->db->join('clubs','clubs.clubid = users.uid','left')->where("`clubs`.`clubid` is null",NULL,FALSE);
             $this->db->order_by('users.last_name','desc');
             $result = $this->db->get('users');
             $user_table = array();
@@ -234,9 +234,9 @@ class Admin extends MY_Controller {
             if($filter == 'licensed')
                 $this->db->where('users.licensed',date("Y"));
             elseif($filter == 'unlicensed')
-                $this->db->where('users.licensed !=',date("Y"))->or_where('users.licensed IS NULL',null,false);
+                $this->db->where('users.licensed !=',date("Y"))->or_where('`users`.`licensed` IS NULL',null,false);
             elseif($filter == 'clubs')
-                $this->db->where('users.uid = users.clubid',null,false);
+                $this->db->where('`users`.`uid` = `users`.`clubid`',null,false);
         }
         if ($this->session->userdata('level') == 'club') {
             // Show users that belong to club
@@ -513,13 +513,13 @@ class Admin extends MY_Controller {
                 $this->db->where("YEAR(DATE_SUB('$date', INTERVAL TO_DAYS(`users`.`dob`) DAY)) <= ".substr($cat,1),null, false);
             }
             if($cat == 'Veteran'){
-                $this->db->where('YEAR(DATE_SUB(`events.date`, INTERVAL TO_DAYS(`users.dob`))) >= 40',null,false);
+                $this->db->where('YEAR(DATE_SUB(`events`.`date`, INTERVAL TO_DAYS(`users`.`dob`))) >= 40',null,false);
             }
             if($this->session->userdata('level') == 'club'){
                 $this->db->where('users.clubid',$this->session->userdata('uid'));
             }
             // exclude those users who are already entered
-            $this->db->join('entrants','entrants.uid = users.uid','left outer')->where('entrants.uid IS NULL',null,false);
+            $this->db->join('entrants','entrants.uid = users.uid','left outer')->where('`entrants`.`uid` IS NULL',null,false);
             $res = $this->db->get('users');
             echo $this->db->last_query();
             $this->data['users'] = $res->result_array();
