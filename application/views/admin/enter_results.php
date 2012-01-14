@@ -8,7 +8,7 @@ $(document).ready( function() {
         event.preventDefault();
         $.ajax({
             url : "admin/add_event_result",
-            data: $(this).serialize();
+            data: {'data':$(this).serialize()};
             success : function(data) {
                 $("#").
             }

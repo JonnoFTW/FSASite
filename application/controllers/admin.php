@@ -30,6 +30,11 @@ class Admin extends MY_Controller {
 		$this->data['main_content'] .= $this->load->view('admin/admin',$this->data,true);
 		$this->load->view('default',$this->data);
 	}
+    
+    private function _get_unentered() {
+        $res = $this->db->select('events.event_id, events.name, events.date')->order_by('date',"desc")->join('results','results.event_id = events.event_id','left outer')->where('results.event_id IS NULL',null,false)->get('events');
+        return $res->result_array();
+    }
 	function enter(){ 
         // Enter competitions
         // Withdrawl
@@ -129,9 +134,10 @@ class Admin extends MY_Controller {
         } else {
             // Show list of events that have not been cancelled without entries
             err:
-            
-            $res = $this->db->select('events.event_id, events.name, events.date')->order_by('date',"desc")->join('results','results.event_id = events.event_id','left outer')->where('results.event_id IS NULL',null,false)->get('events');
-            $this->data['events'] = $res->result_array();
+            $this->data['events'] = array();
+            foreach($this::_get_unentered() as $v) {
+                $this->data['events'][] = heading(anchor('admin/result_entry/'.$v['event_id'],"{$v['name']} {$v['date']}"),3);
+            }
             $this->data['main_content'] .= $this->load->view('admin/show_events',$this->data,true);
         }
         $this->load->view('default',$this->data);
@@ -477,5 +483,84 @@ class Admin extends MY_Controller {
             echo "There was an error!";
         }   
     }
+
+    
+    function comp_entry($id = false) { 
+        if($id) {
+            // Check if comp actually exists 
+            // show users eligible for comp with a checkbox
+            
+            // clubs should only be able to enter their own users, this will be in the insert function too.
+            // should probably combine those 2 tables (entrants, results)
+            $res = $this->db->get_where('events',array('event_id'=>$id));
+            if($res->num_rows() == 0){
+                // No such event exists!
+                $this->data['warning'] = "No such event exists!";
+                goto err2;
+            }
+            $this->data['event'] = $res->row_array();
+            switch($this->data['event']['gender']){
+                case 'F':
+                    $this->db->where('users.gender','F');
+                    break;
+                case 'M':
+                    $this->db->where('users.gender','M');
+                    break;
+            }
+            $cat = $this->data['event']['category'];
+            if(in_array($cat,array('U11','U13','U15','U17','U20')) ){
+                $date = date('Y-1-1');
+                $this->db->where("YEAR(DATE_SUB('$date', INTERVAL TO_DAYS(`users`.`dob`) DAY)) <= ".substr($cat,1),null, false);
+            }
+            if($cat == 'Veteran'){
+                $this->db->where('YEAR(DATE_SUB(`events.date`, INTERVAL TO_DAYS(`users.dob`))) >= 40',null,false);
+            }
+            if($this->session->userdata('level') == 'club'){
+                $this->db->where('users.clubid',$this->session->userdata('uid'));
+            }
+            // exclude those users who are already entered
+            $this->db->join('entrants','entrants.uid = users.uid','left outer')->where('entrants.uid IS NULL',null,false);
+            $res = $this->db->get('users');
+            echo $this->db->last_query();
+            $this->data['users'] = $res->result_array();
+            $this->data['main_content'] .= $this->load->view('admin/comp_entry',$this->data,true);
+        } else {
+            // list competitions that do not yet have results
+            // this should allow us to add competitors after the event has begun
+            err2:
+            $this->data['events'] = array();
+            foreach($this::_get_unentered() as $v) {
+                $this->data['events'][] = heading(anchor('admin/comp_entry/'.$v['event_id'],"{$v['name']} {$v['date']}"),3);
+            }
+            $this->data['main_content'] .= $this->load->view('admin/show_events',$this->data,true);
+        }
+        $this->load->view('default',$this->data);
+    }
+    
+    function add_entrants() {
+        // get the json
+
+        // insert it into the entrants for that compettition id
+    }
+    function pass_reset() {
+        $reset = $this->input->post('reset');
+        if($reset) {
+            // reset their password using the input
+            if($this->input->post('pass') == $this->input->post('pass_confirm')){
+                $this->db->update('users',array('pass'=>crypt($this->input->post('pass'),'$2a$07$FdAQgn8nY8NdOqs9OIGIGA$')))->where('uid',$this->session->userdata('uid'));
+                $this->data['main_content'] .= $this->load->view('admin/pass_reset_sucess',$this->data,true);
+            }
+            else {
+                $this->data['warning'] = "There was a mismatch between the provded passwords. Your password not updated, please try again";
+                $this->data['main_content'] .= $this->load->view('admin/pass_reset',$this->data,true);
+            }
+        } else {
+            // Display the form
+            $this->data['main_content'] .= $this->load->view('admin/pass_reset',$this->data,true);
+        }
+        $this->load->view('default',$this->data);
+    }
+    
+
 }
 ?>

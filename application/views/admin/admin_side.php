@@ -19,19 +19,21 @@
         $pages = array(
             anchor('admin/page/home','Home'),
             anchor('admin/page/news','News'),
-            heading("Calendar",5)=>array(
-                anchor('admin/page/calendar','Add events'),
-                anchor('calendar','Update events')
-             ),
             anchor('admin/page/forms','Forms and Resources'),
             anchor('admin/rules/','Rules')
         );
         echo ul($pages,array('class'=>'menu'));
         $items[] = anchor('admin/result_entry','Results Entry');
+        $items[] = anchor('admin/page/calendar','Add events');
+        $items[] = anchor('calendar','Update events');
     }
     
     $items[] = anchor('admin/comp_entry','Competition Entry');
     echo heading("Events",5);
+    echo ul($items,array('class'=>'menu'));
+    
+    echo heading("Your Account",5);
+    $items = array(anchor('admin/pass_reset',"Reset Password"));
     echo ul($items,array('class'=>'menu'));
     echo "</div>";
      ?>

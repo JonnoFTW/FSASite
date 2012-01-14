@@ -7,17 +7,18 @@
 View news from year:
 <script type="text/javascript">
 $(document).ready(function() {
-    $('option').click( function() {
-        window.location = "<? echo base_url() ?>news/year/"+ $(this).text();
+    $('#years').change( function() {
+        window.location = "<? echo base_url() ?>news/year/"+ $("#years option:selected").text();
     });
 });    
 </script>
 <? 
 $y = array();
+$y[] = "";
 foreach($years as $i) {
     $y[$i['year']] = $i['year'];
 }
-echo form_dropdown('Years',array_values($y));
+echo form_dropdown('Years',array_values($y),null,'id="years"');
 
 //var_dump($years);
 ?>
