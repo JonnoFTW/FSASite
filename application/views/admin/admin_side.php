@@ -11,21 +11,20 @@
         anchor('admin/user/filter/clubs','Clubs')
     );
     if($this->session->userdata('level') == 'executive')
-        $items[] = anchor('admin/licenses','Manage licenses');
+        $items[] = anchor('admin/user/licenses','Manage licenses');
     echo ul($items,array('class'=>'menu'));
     $items = array();
     if($this->session->userdata('level') == 'executive') {
         echo heading('Pages',5);
         $pages = array(
             anchor('admin/page/home','Home'),
-            anchor('admin/page/news','News'),
-            anchor('admin/page/forms','Forms and Resources'),
-            anchor('admin/rules/','Rules')
+            anchor('admin/news','News'),
+            anchor('admin/forms','Forms and Resources'),
+            anchor('admin/rules','Rules')
         );
         echo ul($pages,array('class'=>'menu'));
-        $items[] = anchor('admin/result_entry','Results Entry');
-        $items[] = anchor('admin/page/calendar','Add events');
-        $items[] = anchor('calendar','Update events');
+        $items[] = anchor('admin/results','Results Entry');
+        $items[] = anchor('admin/events','Add events');
     }
     
     $items[] = anchor('admin/comp_entry','Competition Entry');

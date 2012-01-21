@@ -100,7 +100,7 @@ $(document).ready(function() {
         echo form_dropdown('type',$types,$user['level']);
         if($user['level'] == 'executive'){
             echo form_label('Note','note');
-            echo form_input('note');
+            echo form_input('note',$user['note']);
         }
         echo "</p>";
     }

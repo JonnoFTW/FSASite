@@ -1,4 +1,5 @@
 <?php
+
 class  MY_Controller  extends  CI_Controller  {
 	
 	function __construct(){
@@ -47,5 +48,37 @@ class  MY_Controller  extends  CI_Controller  {
 		}
 		return $out;
 	}
-}   
+}  
+ 
+class MY_Admin extends MY_Controller {
+
+    function __construct(){
+		parent::__construct();
+        //    var_dump($this->session->all_userdata());
+            $this->data['title'] = 'Administration';
+            if(!$this->session->userdata('logged')){
+                redirect('login');
+            }
+        else{
+             //   $this->res = $this->db->query("SELECT * FROM user_level");
+             //   $this->data['side'] = $this->res->result_array();
+                $this->data['main_content'] = $this->load->view('admin/admin_side',$this->data,true);
+            }
+            $this->load->library('table');
+            $this->load->library('form_validation');
+            
+            $clubs = array();
+            $result = $this->db->get('clubs');
+            foreach($result->result_array() as $k=>$v){
+                $clubs[$v['clubid']] = $v['short_name'];
+            }
+            $clubs[''] = '';
+            $this->data['clubs'] = $clubs;
+	}
+    
+    private function _get_unentered() {
+        $res = $this->db->select('events.event_id, events.name, events.date')->order_by('date',"desc")->join('results','results.event_id = events.event_id','left outer')->where('`results`.`event_id` IS NULL',null,false)->get('events');
+        return $res->result_array();
+    }
+}
 ?>
