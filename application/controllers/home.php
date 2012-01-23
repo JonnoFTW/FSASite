@@ -12,6 +12,36 @@ class Home extends MY_Controller {
         $result = $this->db->order_by("date","asc")->get('events',10);
         $this->data['events'] = $result->result_array();
         
+        $results = array();
+        $result = $this->db->order_by('results.res','asc')->order_by('events.date','desc')->join('results','results.event_id = events.event_id')->join('users','users.uid = results.uid')->get('events',3);
+        foreach($result->result_array() as $v) {
+            $pieces = explode(' ',$v['date']);
+            $date = $pieces[0];
+            $results[$v['event_id']][] = array(
+                             'event_name' => "{$date} {$v['name']}",
+                              'date' =>  $v['date'],
+                              'name'=> " {$v['first_name']} {$v['last_name']}",
+                              'pos' =>  $this->_addOrdinal($v['res'])
+                            );
+        }
+        $tables = array();
+        foreach($results as $k=>$v) {
+            $this->table->set_heading('Position','Name');
+            $this->table->set_template(array(
+                'table_open'=> "\n<table>\n<colgroup>\n\t<col class=\"colA\">\n\t<col class=\"colB\">\n</colgroup>\n<thead>\n<tr><th class=\"table-head\" colspan=\"3\">".anchor('results/event/'.$k,$v[0]['event_name']).'</th></tr>',
+                'thead_open' =>'',
+                'thead_close' =>'',
+                'heading_row_end' => '</tr></thead>',
+            ));
+            $arr = array();
+            foreach($v as $w){
+                $arr[] = array($w['pos'],$w['name']);
+            }
+            $tables[] = $this->table->generate($arr);
+            $this->table->clear();
+        }
+        $this->data['results'] = $tables;
+        
 		$this->data['main_content'] = $this->load->view('home',$this->data,true);
 		$this->data['title'] = 'Home Page';
 		$this->load->view('default',$this->data);

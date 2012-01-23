@@ -4,20 +4,26 @@
 <div class="block" id="login-forms">
 	<? echo form_open('results/search');?>
 		<fieldset class="login">
-			<legend>Search</legend>
-			<p>Items can be left blank</p>
-			<p>
-				<label>Category</label>
-				<select name="category">
-				<? foreach(array("","U11","U13","U15","U17","U20","Novice","Intermediate","Open","Veteran") as $i){echo "<option value='{$i}'>{$i}</option>";} ?>
-				</select>
+			<legend>Search by Fencer</legend>
+            <p>
+                <?
+                    echo form_label('Name','name');
+                    echo form_input('name');
+                ?>
+            </p>
+			<legend>Search by Event</legend>
+			<p> 
+                <?
+                    echo form_label('Category','category');
+                    echo form_dropdown('category',$CATEGORIES);
+                ?>
 				
 			</p>
-			<p>
-				<label>Weapon: </label>
-				<select name="weapon">
-				<? foreach(array("","Foil","Epee","Sabre") as $i){echo "<option value='{$i}'>{$i}</option>";} ?>
-				</select>
+			<p>                
+                <?
+                    echo form_label('Weapon','weapon');
+                    echo form_dropdown('weapon',$WEAPONS);
+                ?>
 			</p>
 			<p>
 				<label>Date from:</label>

@@ -1,109 +1,65 @@
+<? /*
+<style type="text/css">
+.kwicks {  
+    list-style: none;  
+    position: relative;  
+    margin: 0;  
+    padding: 0; 
+    width: 100%;
+} 
+.kwicks li{  
+    float: left;  
+    width: 125px;  
+    height: 100%;  
+    margin-right: 5px;  
+    
+}
+</style>
+<script type="text/javascript" src="<?php echo base_url();?>scripts/jquery.kwicks-1.5.1.pack.js" ></script>
+<script type="text/javascript">
+    $().ready(function() {
+        $('.kwicks').kwicks({
+            max: 205,
+            spacing:  5
+         });
+    });
+</script>
+<div class="grid_12">
+<div class="box">
+<? echo heading('Gallery',2) ?>
+<div class="block">
+<?
+    // Images should probably be drawn randomly from the gallery
+    $imgs = array(
+        img('assets/images/sponsor1.png'),
+    );
+    
+    echo ul($imgs,array('class'=>'kwicks'));
+?>
+</div>
+</div>
+</div>
+*/
+?>
+<style type="text/css">
+td:first-child {font-weight: bold;}
+.table-head a {
+    color: white;
+    font-weight:normal;
+}
+</style>
 <div class="grid_3">
 <!-- begin results block -->
 				<div class="box">
-					<h2>
-						<a href="#" id="toggle-tables">Recent Results</a>
-					</h2>
+                    <?
+                        echo heading(anchor('results','Recent Results'),2);
+                    ?>
 					<div class="block" id="tables">
-						<table>
-							<colgroup>
-								<col class="colA" />
-								<col class="colB" />
-							</colgroup>
-							<thead>
-								<tr>
-									<th colspan="3" class="table-head">3/07/2011 Open Mens Foil</th>
-								</tr>
-								<tr>
-									<th>Position</th>
-									<th>Name</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr class="odd">
-									<th>1st</th>
-									<td>Jahan Penny-Dimri</td>
-								</tr>
-								<tr>
-									<th>2nd</th>
-									<td>Michael Dzodzos</td>
-								</tr>
-								<tr class="odd">
-									<th>3rd</th>
-									<td>Louis Ritchie</td>
-								</tr>
-								<tr>
-									<th>3rd</th>
-									<td>Matteo Barchiesi</td>
-								</tr>
-							</tbody>
-						</table>
-						<table>
-							<colgroup>
-								<col class="colA" />
-								<col class="colB" />
-							</colgroup>
-							<thead>
-								<tr>
-									<th colspan="3" class="table-head">3/07/2011 Open Mens Foil</th>
-								</tr>
-								<tr>
-									<th>Position</th>
-									<th>Name</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr class="odd">
-									<th>1st</th>
-									<td>Jahan Penny-Dimri</td>
-								</tr>
-								<tr>
-									<th>2nd</th>
-									<td>Michael Dzodzos</td>
-								</tr>
-								<tr class="odd">
-									<th>3rd</th>
-									<td>Louis Ritchie</td>
-								</tr>
-								<tr>
-									<th>3rd</th>
-									<td>Matteo Barchiesi</td>
-								</tr>
-							</tbody>
-						</table>
-						<table>
-							<colgroup>
-								<col class="colA" />
-								<col class="colB" />
-							</colgroup>
-							<thead>
-								<tr>
-									<th colspan="3" class="table-head">3/07/2011 Open Mens Foil</th>
-								</tr>
-								<tr>
-									<th>Position</th>
-									<th>Name</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr class="odd">
-									<th>1st</th>
-									<td>Jahan Penny-Dimri</td>
-								</tr>
-								<tr>
-									<th>2nd</th>
-									<td>Michael Dzodzos</td>
-								</tr>
-								<tr class="odd">
-									<th>3rd</th>
-									<td>Louis Ritchie</td>
-								</tr>
-								<tr>
-									<th>3rd</th>
-									<td>Matteo Barchiesi</td>
-								</tr>
-							</tbody>
-						</table>
+                    <?
+                        foreach($results as $v) {
+                            echo $v;
+                        }
+                    ?>
                     </div>
 				</div>
 <!-- end results block -->
@@ -165,9 +121,9 @@ of their training programs. The document is recommended reading for cadet &amp; 
 					</div>
 				</div>
 				<div class="box menu">
-					<h2>
-						<a href="#" id="toggle-section-menu">Upcoming Events</a>
-					</h2>
+					<?
+                    echo heading(anchor('calendar','Upcoming Events'),2);
+                    ?>
                 <div class="block" id="section-menu">
 						<ul class="section menu">
 							<li>
@@ -202,9 +158,9 @@ of their training programs. The document is recommended reading for cadet &amp; 
 					</div> -->
 				</div>
 				<div class="box articles">
-					<h2>
-						<a href="#" id="toggle-articles">Latest News</a>
-					</h2>
+					<?
+						echo heading(anchor('news','Recent News'),2);
+					?>
 					<div class="block" id="articles">
                         <? 
                             foreach($news as $k=>$i){

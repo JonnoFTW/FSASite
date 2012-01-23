@@ -1,15 +1,26 @@
 <?php  
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class Results extends MY_Admin {
+class Events extends MY_Admin {
 
     function __construct(){
-		parent::__construct();	
+		parent::__construct(); 
+        if($this->session->userdata('level') != 'executive') {
+            $this->data['main_content'] .=  $this->load->view('admin/forbidden',$this->data,true);
+            $this->load->view('default',$this->data);
+        }
     }
     function index(){
-		$this->data['main_content'] .=  $this->load->view('admin/forbidden',true);
-		$this->load->view('default',$this->data);
+        // Give option of adding events, or adding competitors
+        
+        $this->data['main_content'] .=  $this->load->view('admin/events',$this->data,true);
+        $this->load->view('default',$this->data);
 	}
+    
+    function add() {
+        $this->data['main_content'] .=  $this->load->view('admin/admin_events',$this->data,true);
+        $this->load->view('default',$this->data);
+    }
      function add_events() {
         //read in the incoming json
         $events = json_decode($this->input->post('events'),true);
@@ -46,9 +57,9 @@ class Results extends MY_Admin {
         foreach($events as &$i) {
             $i['date'] .= ' '.$i['time'];
             unset($i['time']);
-            if($i['gender'] == "M") $i['gender'] = "Mens";
-            elseif ($i['gender'] == "F") $i['gender'] = "Womens";
-            elseif ($i['gender'] == "O") $i['gender'] = "Mixed";
+            if($i['gender'] == "M") $i['gender'] = "M";
+            elseif ($i['gender'] == "F") $i['gender'] = "F";
+            elseif ($i['gender'] == "O") $i['gender'] = "O";
             if($i['name'] == "") 
                 $i['name'] = "{$i['category']} {$i['gender']} {$i['weapon']}";
             $this->db->insert('events',$i);
@@ -64,7 +75,7 @@ class Results extends MY_Admin {
         // insert it into the entrants for that compettition id
     }
         
-    function comp_entry($id = false) { 
+    function entry($id = false) { 
         if($id) {
             // Check if comp actually exists 
             // show users eligible for comp with a checkbox
@@ -97,7 +108,7 @@ class Results extends MY_Admin {
                 $this->db->where('users.clubid',$this->session->userdata('uid'));
             }
             // exclude those users who are already entered
-            $this->db->join('entrants','entrants.uid = users.uid','left outer')->where('`entrants`.`uid` IS NULL',null,false);
+            $this->db->join('results','results.uid = users.uid','left outer')->where('`results`.`uid` IS NULL',null,false);
             $res = $this->db->get('users');
            // echo $this->db->last_query();
             $this->data['users'] = $res->result_array();
@@ -108,7 +119,7 @@ class Results extends MY_Admin {
             err2:
             $this->data['events'] = array();
             foreach($this::_get_unentered() as $v) {
-                $this->data['events'][] = heading(anchor('admin/comp_entry/'.$v['event_id'],"{$v['name']} {$v['date']}"),3);
+                $this->data['events'][] = heading(anchor('admin/events/entry/'.$v['event_id'],"{$v['name']} {$v['date']}"),3);
             }
             $this->data['main_content'] .= $this->load->view('admin/show_events',$this->data,true);
         }

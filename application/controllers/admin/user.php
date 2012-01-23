@@ -5,6 +5,7 @@ class User extends MY_Admin {
 
     function __construct(){
 		parent::__construct();	
+        $this->data['title'] .= ':: Manage Users';
     }
     
     function index($filter = false) {

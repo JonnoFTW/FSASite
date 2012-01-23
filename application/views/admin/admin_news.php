@@ -9,7 +9,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 <?
 echo heading('Add a news item',2);
 echo "<div id=\"forms\" class=\"block\">";
-echo form_open('admin/add_news');
+echo form_open('admin/news/add');
 echo form_fieldset('Add news');
 if(isset($err)){
     echo "Be sure to include both a title and a message";

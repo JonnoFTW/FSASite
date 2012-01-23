@@ -11,7 +11,7 @@ class Login extends MY_Controller {
 	}
 	public function index(){
         if($this->input->post('user') && $this->input->post('pass')){
-            $this->db->where(array('email'=>$this->input->post('user'),'pass'=>crypt($this->input->post('pass'),'$2a$07$FdAQgn8nY8NdOqs9OIGIGA$')));
+            $this->db->where(array('email'=>$this->input->post('user'),'pass'=>crypt($this->input->post('pass'),$this->pass_salt)));
             $this->db->join('user_level','users.uid = user_level.uid');
             $query = $this->db->get('users');
             if($query->num_rows() > 0) {

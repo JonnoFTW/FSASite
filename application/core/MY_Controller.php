@@ -9,8 +9,45 @@ class  MY_Controller  extends  CI_Controller  {
 		$this->load->helper('html');
 		$this->load->helper('directory');
 		$this->load->helper('form');
+        $this->load->library('table');
 		$this->data['menu'] = $this->_generate_menu(); 
+        $this->pass_salt = '$2a$07$FdAQgn8nY8NdOqs9OIGIGA$';
+        
+        $this->data['GENDERS'] = array(
+            'M'=>'Mens',
+            'F'=>'Womens',
+            'O'=>'Mixed'
+        );
+        $this->data['WEAPONS'] = array(
+            'Foil'=>'Foil',
+            'Epee'=>'Epee',
+            'Sabre'=>'Sabre'
+        );
+        $this->data['CATEGORIES'] = array(
+            'U11'=>'U11',
+            'U13'=>'U13',
+            'U15'=>'U15',
+            'U17'=>'U17',
+            'U20'=>'U20',
+            'Novice'=>'Novice',
+            'Intermediate'=>'Intermediate',
+            'Open'=>'Open',
+            'Veteran'=>'Veteran'
+        );
+        
 	}
+    protected function _addOrdinal($num) {
+        if (!in_array(($num % 100),array(11,12,13))){
+            switch ($num % 10) {
+                // Handle 1st, 2nd, 3rd
+                case 1:  return $num.'st';
+                case 2:  return $num.'nd';
+                case 3:  return $num.'rd';
+            }
+        }
+        return $num.'th';
+    }
+ 
 	private function _generate_menu(){
 		$out = '';
 		$pages = array(
@@ -64,7 +101,7 @@ class MY_Admin extends MY_Controller {
              //   $this->data['side'] = $this->res->result_array();
                 $this->data['main_content'] = $this->load->view('admin/admin_side',$this->data,true);
             }
-            $this->load->library('table');
+            
             $this->load->library('form_validation');
             
             $clubs = array();
@@ -76,7 +113,7 @@ class MY_Admin extends MY_Controller {
             $this->data['clubs'] = $clubs;
 	}
     
-    private function _get_unentered() {
+    protected function _get_unentered() {
         $res = $this->db->select('events.event_id, events.name, events.date')->order_by('date',"desc")->join('results','results.event_id = events.event_id','left outer')->where('`results`.`event_id` IS NULL',null,false)->get('events');
         return $res->result_array();
     }

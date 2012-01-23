@@ -24,11 +24,11 @@
         );
         echo ul($pages,array('class'=>'menu'));
         $items[] = anchor('admin/results','Results Entry');
-        $items[] = anchor('admin/events','Add events');
+        $items[] = anchor('admin/events/add','Add events');
     }
     
-    $items[] = anchor('admin/comp_entry','Competition Entry');
-    echo heading("Events",5);
+    $items[] = anchor('admin/events/entry','Competition Entry');
+    echo heading(anchor("admin/events","Events"),5);
     echo ul($items,array('class'=>'menu'));
     
     echo heading("Your Account",5);

@@ -4,16 +4,24 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class Results extends MY_Admin {
 
     function __construct(){
-		parent::__construct();	
-    }
-    function index(){
+		parent::__construct();
         if($this->session->userdata('level') != "executive") {
             $this->data['main_content'] .=  $this->load->view('admin/forbidden',true);
             $this->load->view('default',$this->data);
         }    
+        $this->data['title'] .= " :: Event Results";
+    }
+    function index(){
+         // Show list of events that have not been cancelled without entries
+        $this->data['events'] = array();
+        foreach($this::_get_unentered() as $v) {
+            $this->data['events'][] = heading(anchor('admin/results/entry/'.$v['event_id'],"{$v['name']} {$v['date']}"),3);
+        }
+        $this->data['main_content'] .= $this->load->view('admin/show_events',$this->data,true);
+        $this->load->view('default',$this->data);
 	}
     
-    function result_entry($id = False) {
+    function entry($id = False) {
         if($id) {
             // We have been blessed with an id
             // Check if this event exists
@@ -30,7 +38,8 @@ class Results extends MY_Admin {
             if(!$found) {
                 // Show the list of events and a message saying that event doesn't exist
                 $this->data['warning'] = "No such event exists!";
-                goto err;
+                $this::index();
+                return;
             } else {
                 // Get all the entrants, tell the user they need to add someone 
                 // as an entrant before their result can be entered
@@ -42,17 +51,11 @@ class Results extends MY_Admin {
                     $table[] = array("{$v['first_name']} {$v['last_name']}",form_input($v['uid']),$v['licensed'] == date("Y"));
                 }
                 $this->data['entrants'] = $this->table->generate($table);
-                
                 $this->data['main_content'] .= $this->load->view('admin/enter_results',$this->data,true);
             }
         } else {
-            // Show list of events that have not been cancelled without entries
-            err:
-            $this->data['events'] = array();
-            foreach($this::_get_unentered() as $v) {
-                $this->data['events'][] = heading(anchor('admin/result_entry/'.$v['event_id'],"{$v['name']} {$v['date']}"),3);
-            }
-            $this->data['main_content'] .= $this->load->view('admin/show_events',$this->data,true);
+            $this::index();
+            return;
         }
         $this->load->view('default',$this->data);
     }

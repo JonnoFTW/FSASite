@@ -30,7 +30,7 @@ $(document).ready(function() {
         });
       //  console.log(events);
         jQuery.ajax({
-            url: "<? echo site_url("admin/add_events"); ?>",
+            url: "<? echo site_url("admin/events/add_events"); ?>",
             type: "POST",
             data: {"events":JSON.stringify(events)},
            // dataType: "json",
@@ -65,27 +65,9 @@ $loc = form_dropdown('type',array(
     'N'=>'National',
     'R'=>'Robyn Chaplin',
 ),'l');
-$gender = form_dropdown('gender',array(
-    'M'=>'Mens',
-    'F'=>'Womens',
-    'O'=>'Mixed'
-),'m');
-$weapon = form_dropdown('weapon',array(
-    'Foil'=>'Foil',
-    'Epee'=>'Epee',
-    'Sabre'=>'Sabre'
-),'f');
-$categories = form_dropdown('category',array(
-    'U11'=>'U11',
-    'U13'=>'U13',
-    'U15'=>'U15',
-    'U17'=>'U17',
-    'U20'=>'U20',
-    'Novice'=>'Novice',
-    'Intermediate'=>'Intermediate',
-    'Open'=>'Open',
-    'Veteran'=>'Veteran'
-),'o');
+$gender = form_dropdown('gender',$GENDERS,'m');
+$weapon = form_dropdown('weapon',$WEAPONS,'f');
+$categories = form_dropdown('category',$CATEGORIES,'o');
 
 echo "<div class='event'>";
 echo "<p>";

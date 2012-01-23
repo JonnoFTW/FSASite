@@ -509,7 +509,7 @@ class CI_Table {
 						'tbody_open'			=> '<tbody>',
 						'tbody_close'			=> '</tbody>',
 
-						'row_start'				=> '<tr>',
+						'row_start'				=> '<tr class="odd">',
 						'row_end'				=> '</tr>',
 						'cell_start'			=> '<td>',
 						'cell_end'				=> '</td>',
