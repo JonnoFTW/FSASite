@@ -53,6 +53,24 @@ class Calendar extends MY_Controller {
 			foreach($this->data['news_item'] as $event){
 				$this->data['days'][$event['date']][] = $event;
 			}
+            $tables = array();
+            foreach($this->data['days'] as $k=>$v) {
+                $this->table->set_heading('Time','Title','Weapon','Gender','Category');
+                $this->table->set_template(array(
+                'table_open'=> "\n<table>\n<thead>\n<tr><th colspan=\"5\" class=\"table-head\">".$k."</th></tr>",
+                'thead_open' =>'',
+                'thead_close' =>'',
+                'cell_start' => '<td class="fixed">',
+                'heading_row_end' => '</tr></thead>',
+                ));
+                $arr = array();
+                foreach($v as $w) {
+                    $arr[] = array(anchor('results/event/'.$w['event_id'],$w['time']),$w['name'],$w['weapon'],$w['gender'],$w['category']);
+                }
+                $tables[] = $this->table->generate($arr);
+                $this->table->clear();
+            }
+            $this->data['tables'] = $tables;
 			$this->data['main_content'] .= $this->load->view('calendar/calendar',$this->data,true);
 		}
 		$this->load->view('default',$this->data);
