@@ -20,15 +20,27 @@ class Results extends MY_Controller {
             $event = $result->row_array();
             $this->data['name'] = $event['name'];
             // Show the entrants and their result if it is set
-            $this->db->select("users.first_name,users.last_name,users.uid, results.res");
+            $this->db->select("users.first_name,users.last_name,users.uid, results.res, users.licensed");
             $this->db->order_by('results.res','asc');
             $this->db->join('users','results.uid = users.uid');
             $result = $this->db->get_where("results",array("event_id"=>$id));
             $entrants = array();
             foreach($result->result_array() as $k=>$v) {
-                $entrants[] = array($this->_addOrdinal($v['res']),anchor("results/user/{$v['uid']}","{$v['first_name']} {$v['last_name']}"));
+                $e = array($this->_addOrdinal($v['res']),anchor("results/user/{$v['uid']}","{$v['first_name']} {$v['last_name']}"));
+                if($this->session->userdata('logged')){
+                    if($v['licensed'] == date("Y")){
+                        $l = "Yes";
+                    } else {
+                        $l = "No";
+                    }
+                    $e[] = anchor('admin/user/id/'.$v['uid'],$l);
+                }
+                $entrants[] = $e;
             }
-            $this->table->set_heading('Position', 'Name');
+            $headings = array('Position', 'Name');
+            if($this->session->userdata('logged'))
+                $headings[] = 'Licensed?';
+            $this->table->set_heading($headings);
             $this->data['entrants'] = $this->table->generate($entrants);
             $this->data['main_content'] .= $this->load->view('results/entrants',$this->data,true);
 		}
@@ -50,9 +62,11 @@ class Results extends MY_Controller {
                 $result = $this->db->get_where('results',array('results.uid'=>$id)); 
                 $event = array();
                 foreach($result->result_array() as $v) {
-                    $event[] = array(anchor("results/event/{$v['event_id']}",$v['name']),$v['res']);
+                    $parts = explode(' ',$v['date']);
+                    $date = $parts[0];
+                    $event[] = array($date,anchor("results/event/{$v['event_id']}",$v['name']),$v['res']);
                 }
-                $this->table->set_heading('Event Name','Rank');
+                $this->table->set_heading('Date','Event Name','Rank');
                 $this->data['events'] = $this->table->generate($event);
                 $this->data['main_content'] .= $this->load->view('results/user',$this->data,true);
             }
