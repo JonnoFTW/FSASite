@@ -1,7 +1,7 @@
 <?php  
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class Results extends MY_Admin {
+class Rules extends MY_Admin {
 
     function __construct(){
 		parent::__construct();	
@@ -9,35 +9,33 @@ class Results extends MY_Admin {
             $this->data['main_content'] .=  $this->load->view('admin/forbidden',true);
             $this->load->view('default',$this->data);
         }
+        $res = $this->db->get("rules");
+        $this->data['rules'] = $res->result_array();
     }
     function index(){
-            $res = $this->db->get("rules");
-            $this->data['rules'] = $res->result_array();
-            
-            if(!$rule) {
-                // Show all the rules
-                $this->data['main_content'] .= $this->load->view('admin/list_rules',$this->data,true);
-            } else {
-                //check the rule to edit actually exists!
-                foreach($this->data['rules'] as $v) {
-                    if($rule == $v['id']){ 
-                        $this->data['rule'] = $v['id'];
-                        break;
-                    }
-                }
-                if(isset($this->data['rule'])){
-                    // Load the rule into a form view
-                    $this->data['main_content'] .= $this->load->view('admin/update_rule',$this->data,true);
-                } else {
-                    $this->data['warning'] = "No such rule exists!";
-                    $this->data['main_content'] .= $this->load->view('admin/list_rules',$this->data,true);
-                }
-                
+         // Show all the rules
+        $this->data['main_content'] .= $this->load->view('admin/rules/list_rules',$this->data,true);
+        $this->load->view('default',$this->data);
+    }
+    function id($rule = false) {
+        //check the rule to edit actually exists!
+        foreach($this->data['rules'] as $v) {
+            if($rule == $v['id']){ 
+                $this->data['rule'] = $v['id'];
+                break;
             }
+        }
+        if(isset($this->data['rule'])){
+            // Load the rule into a form view
+            $this->data['main_content'] .= $this->load->view('admin/rules/update_rule',$this->data,true);
+        } else {
+            $this->data['warning'] = "No such rule exists!";
+            $this->data['main_content'] .= $this->load->view('admin/rules/list_rules',$this->data,true);
         }
         $this->load->view('default',$this->data);
     }
-        function update_rule() {
+    
+    function update_rule() {
         // Read in the JSON and update
         if($info = $this->input->post('rule')){
             $vars = array();
@@ -70,4 +68,4 @@ class Results extends MY_Admin {
             echo "There was an error!";
         }   
     }
-    }
+}

@@ -93,7 +93,7 @@ td:first-child {font-weight: bold;}
 						<blockquote>
 							<p>Welcome to FencingSA, the website for all fencing in South Australia. If you are curious about about fencing then find some information <a href="documents/info/starting.php">here</a> or read the news below to find out what is happening with your local fencing sports scene.</p>
 							<p class="cite">
-								<cite>FencingSA Committee</cite>
+								<cite>FencingSA Executive</cite>
 							</p>
 						</blockquote>
 					</div>
@@ -104,20 +104,12 @@ td:first-child {font-weight: bold;}
 					<div class="block">
 						<div>
 							<div class="element atStart">
-								<h4>AFF Development Guidelines for Cadet &amp; Junior Fencers</h4>
-								<p>The AFF have published guidelines for cadet &amp; junior fencers to assist with development 
-of their training programs. The document is recommended reading for cadet &amp; junior fencers who are aiming for national representation and is available 
-<a href="http://ausfencing.org/files/%5B221%5D%20AFF%20Cadet%20and%20Junior%20Development%20Guidelines%20(Dec08).pdf">here</a>.
-</p>
-							</div>
-							<div class="element atStart">
-								<h4>AFF Member Protection Policy</h4>
-								<p>The AFF have published a member protection policy which applies to all associated individuals 
-(coaches, athletes, referees, registered fencers, parents, spectators, etc) and is available
-<a href="http://ausfencing.org/home/attachments/027_AFF%20Member%20Protection%20Policy%20(May08).pdf">here</a>
-</p>
+                                    <? echo $message['message']; ?>
 							</div>
 						</div>
+                        <p class="cite">
+                        <? echo "{$message['first_name']} {$message['last_name']}, updated {$message['updated']}" ;?>
+                        </p>
 					</div>
 				</div>
 				<div class="box menu">

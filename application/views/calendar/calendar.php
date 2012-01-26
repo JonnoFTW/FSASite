@@ -26,7 +26,7 @@ $(document).ready(function() {
 });
 </script>
 <?
-echo "<h2>{$type}</h2>";
+echo "<h2>{$type} Events for {$year}</h2>";
 
 foreach($tables as $v) {
 echo '<div id="tables" class="block events">';

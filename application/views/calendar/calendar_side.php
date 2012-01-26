@@ -14,7 +14,7 @@ echo ul($res,array('class'=>'menu'));
 echo heading("View local timetable for year:",5);
 
 foreach($years as &$i){
-    $i = anchor("calendar/year/".$i['year'],$i['year']);
+    $i = anchor("calendar/type/Local/".$i['year'],$i['year']);
 }
 echo ul($years,array('class'=>'menu'));
 ?>

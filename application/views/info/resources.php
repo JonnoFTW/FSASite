@@ -22,7 +22,7 @@
 <?
 function form($i){
 	echo "<tr class=\"odd\">
-	<th class=\"fixed\">".anchor('assets/documents/'.$i['link'],$i['name'])."</th><td>{$i['description']}</td></tr>";
+	<th class=\"fixed\">".anchor('download/get/'.$i['fid'],$i['name'])."</th><td>{$i['description']}</td></tr>";
 }
 foreach($res as $i){form($i);}
  ?>

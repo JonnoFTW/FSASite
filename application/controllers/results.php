@@ -39,7 +39,7 @@ class Results extends MY_Controller {
             }
             $headings = array('Position', 'Name');
             if($this->session->userdata('logged'))
-                $headings[] = 'Licensed?';
+                $headings[] = 'Licensed in '.date("Y").'?';
             $this->table->set_heading($headings);
             $this->data['entrants'] = $this->table->generate($entrants);
             $this->data['main_content'] .= $this->load->view('results/entrants',$this->data,true);
