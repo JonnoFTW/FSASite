@@ -10,5 +10,12 @@
         ?>
         
         </div>
+        
+        <?
+            if($logged) {
+                echo anchor('admin/results/entry/'.$event_id,'Update results for this event');
+            }
+          
+        ?>
     </div>
 </div>

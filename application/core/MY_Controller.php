@@ -103,7 +103,12 @@ class MY_Admin extends MY_Controller {
             }
             
             $this->load->library('form_validation');
-            
+            $this->load->library('user_agent');
+            if($this->agent->is_browser('MSIE')) {
+                $this->data['IS_IE'] = true;
+            } else {
+                $this->data['IS_IE'] = false;
+            }
             $clubs = array();
             $result = $this->db->get('clubs');
             foreach($result->result_array() as $k=>$v){
@@ -114,7 +119,7 @@ class MY_Admin extends MY_Controller {
 	}
     
     protected function _get_unentered() {
-        $res = $this->db->select('events.event_id, events.name, events.date')->order_by('date',"desc")->join('results','results.event_id = events.event_id','left outer')->where('`results`.`event_id` IS NULL',null,false)->get('events');
+        $res = $this->db->select("`events`.`event_id`, `events`.`name`, DATE_FORMAT(`events`.`date`,'%M %e %Y') AS `date`, DATE_FORMAT(`events`.`date`,'%H:%i') as `time`",FALSE)->order_by('events.date',"desc")->join('results','results.event_id = events.event_id','left outer')->where('`results`.`event_id` IS NULL',null,false)->get('events');
         return $res->result_array();
     }
 }

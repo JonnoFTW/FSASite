@@ -1,7 +1,7 @@
 <div class="grid_9"> 
 <div class="box">
 <?
-echo heading("Upload successful!",2);
+echo heading("Upload Error!",2);
 
 ?>
 <div class="block">

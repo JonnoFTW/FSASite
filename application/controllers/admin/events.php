@@ -13,12 +13,12 @@ class Events extends MY_Admin {
     function index(){
         // Give option of adding events, or adding competitors
         
-        $this->data['main_content'] .=  $this->load->view('admin/events',$this->data,true);
+        $this->data['main_content'] .=  $this->load->view('admin/events/events_home',$this->data,true);
         $this->load->view('default',$this->data);
 	}
     
     function add() {
-        $this->data['main_content'] .=  $this->load->view('admin/admin_events',$this->data,true);
+        $this->data['main_content'] .=  $this->load->view('admin/events/add_events',$this->data,true);
         $this->load->view('default',$this->data);
     }
      function add_events() {
@@ -112,7 +112,7 @@ class Events extends MY_Admin {
             $res = $this->db->get('users');
            // echo $this->db->last_query();
             $this->data['users'] = $res->result_array();
-            $this->data['main_content'] .= $this->load->view('admin/comp_entry',$this->data,true);
+            $this->data['main_content'] .= $this->load->view('admin/events/comp_entry',$this->data,true);
         } else {
             // list competitions that do not yet have results
             // this should allow us to add competitors after the event has begun
@@ -121,7 +121,7 @@ class Events extends MY_Admin {
             foreach($this::_get_unentered() as $v) {
                 $this->data['events'][] = heading(anchor('admin/events/entry/'.$v['event_id'],"{$v['name']} {$v['date']}"),3);
             }
-            $this->data['main_content'] .= $this->load->view('admin/show_events',$this->data,true);
+            $this->data['main_content'] .= $this->load->view('admin/events/list_events',$this->data,true);
         }
         $this->load->view('default',$this->data);
     }

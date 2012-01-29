@@ -10,9 +10,14 @@ Update user info for all users using the link at the right. You can enter compet
 competitions using the other links.
 
 The pages links will allow you to update the information on each page.
-<? } ?>
+<? }
+if($IS_IE) {
+
+ ?>
 
 Please note, this site runs makes heavy use of modern web tools, to take full advantage of these features, please upgrade to the latest version of <a href="http://www.mozilla.org/en-US/firefox/fx/">Mozilla Firefox</a> or <a href="https://www.google.com/chrome?brand=CHMO#eula">Google Chrome</a>. If you are using Internet Explorer, some features may not work.<noscript>Having javascript enable also helps, a lot</noscript>
+
+<? } ?>
 </div>
 </div>
 </div>

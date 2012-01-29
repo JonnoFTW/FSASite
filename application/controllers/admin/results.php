@@ -13,11 +13,15 @@ class Results extends MY_Admin {
     }
     function index(){
          // Show list of events that have not been cancelled without entries
-        $this->data['events'] = array();
+        $events = array();
+        $this->table->set_heading('Date','Time','Name');
+        
         foreach($this::_get_unentered() as $v) {
-            $this->data['events'][] = heading(anchor('admin/results/entry/'.$v['event_id'],"{$v['name']} {$v['date']}"),3);
+            $events[] = array($v['date'],$v['time'],anchor('admin/results/entry/'.$v['event_id'],"{$v['name']}"));
         }
-        $this->data['main_content'] .= $this->load->view('admin/show_events',$this->data,true);
+        
+        $this->data['events'] = $this->table->generate($events);
+        $this->data['main_content'] .= $this->load->view('admin/events/list_events',$this->data,true);
         $this->load->view('default',$this->data);
 	}
     
@@ -44,7 +48,7 @@ class Results extends MY_Admin {
                 // Get all the entrants, tell the user they need to add someone 
                 // as an entrant before their result can be entered
                 $this->db->select('users.first_name , users.last_name, users.uid, users.licensed');
-                $result = $this->db->join('users','users.uid = entrants.uid')->get_where('entrants',array('event_id'=>$id));
+                $result = $this->db->join('users','users.uid = results.uid')->get_where('results',array('event_id'=>$id));
                 $table = array();
                 $this->table->set_heading(array("Name","Position","Licensed?"));
                 foreach($result->result_array() as $v) {

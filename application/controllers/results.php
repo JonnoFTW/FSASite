@@ -4,6 +4,8 @@ class Results extends MY_Controller {
 		parent::__construct();
 		$this->data['title'] = 'Results';
 		$this->data['main_content']  = $this->load->view('results/results_search',$this->data,true);
+        $this->data['logged'] = ($this->session->userdata('level') == 'executive');
+        
 	}
 	public function index()	{
 		$this->data['main_content']  .= $this->load->view('results/results_main',$this->data,true);
@@ -41,6 +43,7 @@ class Results extends MY_Controller {
             if($this->session->userdata('logged'))
                 $headings[] = 'Licensed in '.date("Y").'?';
             $this->table->set_heading($headings);
+            $this->data['event_id'] = $id;
             $this->data['entrants'] = $this->table->generate($entrants);
             $this->data['main_content'] .= $this->load->view('results/entrants',$this->data,true);
 		}
