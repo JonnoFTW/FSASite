@@ -136,19 +136,19 @@ td:first-child {font-weight: bold;}
                 </div>
 			</div>
 			<div class="grid_4">
-				<div class="box">
+				<!--<div class="box">
 					<h2>
 						<a href="#" id="toggle-search">Search</a>
 					</h2>
-				<!--	<div class="block" id="search">
+					<div class="block" id="search">
 						<form method="get" action="" class="search">
 							<p>
 								<input class="search text" name="value" type="text" />
 								<input class="search button" value="Search" type="submit" />
 							</p>
 						</form>
-					</div> -->
-				</div>
+					</div> 
+				</div>-->
 				<div class="box articles">
 					<?
 						echo heading(anchor('news','Recent News'),2);

@@ -3,25 +3,11 @@
 <div class="box">
 <h2>Event Types</h2>
 
-<h3><? echo anchor("calendar/type/Local","Local"); ?></h3>
-<p>
-Listing of all local events.
-</p>
+<?
+foreach($EVENT_TYPE as $k=>$v) {
+    echo heading(anchor("calendar/type/".$k,$v['type']),4);
+    echo "<p>{$v['description']}</p>";
+}
+?>
 
-
-<h3><? echo anchor("calendar/type/Robyn Chaplin","Robyn Chaplin"); ?></h3>
-<p>
-Details of the Robyn Chaplin Memorial tournament.
-</p>
-
-
-<h3><? echo anchor("calendar/type/National","National"); ?></h3>
-<p>
-All national events.
-</p>
-
-<h3>Events</h3>
-<p>
-All other events organised by FencingSA such as dinners and courses.
-<p>
 </div>

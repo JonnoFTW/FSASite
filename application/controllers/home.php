@@ -9,9 +9,9 @@ class Home extends MY_Controller {
 	public function index(){
 		$result = $this->db->query('SELECT * FROM news, users WHERE news.author = users.uid ORDER BY posted desc LIMIT 0,3');
 		$this->data['news'] = $result->result_array();
-        $result = $this->db->order_by("date","desc")->get('events',10);
+        $result = $this->db->order_by("date","desc")->where('`events`.`date` > NOW() ',null,false)->get('events',10);
         $this->data['events'] = $result->result_array();
-        
+
         $results = array();
         $result = $this->db->order_by('events.date','desc')->order_by('results.res','asc')->join('results','results.event_id = events.event_id')->join('users','users.uid = results.uid')->where('results.res IS NOT NULL',NULL,false)->get('events',3);
         foreach($result->result_array() as $v) {
@@ -41,7 +41,6 @@ class Home extends MY_Controller {
             $this->table->clear();
         } 
         $this->data['results'] = $tables;
-        
         $result = $this->db->select('updated, message, users.first_name, users.last_name ')->join('users','users.uid = pages.author','left')->get_where('pages',array('title'=>'home'));
         
         $this->data['message'] = $result->row_array();

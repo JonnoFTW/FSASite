@@ -40,7 +40,8 @@ $(document).ready( function() {
             echo heading("Available forms are: ",2);
         ?>
         <div  class="block">
-        Make your changes to as many files as you wish, then click 'submit'.
+        Make your changes to as many files as you wish, then click 'submit'. Note, the "Name" field will be the name of the file when it is downloaded.
+        
         <?
             echo '<form id="form_list">';
             echo form_fieldset("Edit Forms");

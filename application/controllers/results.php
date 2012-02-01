@@ -8,6 +8,15 @@ class Results extends MY_Controller {
         
 	}
 	public function index()	{
+        $this->db->select("DISTINCT(`results`.`event_id`), `events`.`name` as Name ,`events`.`date` as Date, `events`.`gender` as Gender",null,false);
+	    $res = $this->db->join('results','events.event_id = results.event_id')->order_by('events.date','desc')->get('events',10);
+        //echo $this->db->last_query();
+        $arr = array();
+        $this->table->set_heading('Name','Date','Gender');
+        foreach($res->result_array() as $v) {
+            $arr[] = array(anchor('results/event/'.$v['event_id'],$v['Name']),$v['Date'],$v['Gender']);
+        }
+        $this->data['latest_results'] = $this->table->generate($arr);
 		$this->data['main_content']  .= $this->load->view('results/results_main',$this->data,true);
 		$this->load->view('default',$this->data);
 	}
@@ -33,7 +42,7 @@ class Results extends MY_Controller {
                     if($v['licensed'] == date("Y")){
                         $l = "Yes";
                     } else {
-                        $l = "No";
+                        $l = "No"; 
                     }
                     $e[] = anchor('admin/user/id/'.$v['uid'],$l);
                 }
@@ -83,22 +92,44 @@ class Results extends MY_Controller {
     
     public function search(){
     // Search by event or by name or by club etc.
+        $arr = array();
         if($name = $this->input->post('name')) {
             // Searching through fencers
             $this->db->like("CONCAT(users.first_name,' ',users.last_name)",$name);
             $this->db->order_by('users.last_name','asc');
             $result = $this->db->get('users');
-            $this->data['fencers'] = $result->result_array();
+            $this->table->set_heading('Name','Gender');
+            foreach($result->result_array() as $v) {
+                 $arr[] = array(anchor("results/user/{$v['uid']}","{$v['first_name']} {$v['last_name']}"),$v['gender']);
+            }
         }
         else  {
             // Searching through events
                
             $this->db->join("events","events.event_id = results.event_id");
+            if(in_array($this->input->post('category'),$this->data['CATEGORIES'])) {
+                $this->db->where('category',$this->input->post('category'));
+            }
+            if(in_array($this->input->post('weapon'),$this->data['WEAPONS'])) {
+                $this->db->where('weapon',$this->input->post('weapon'));
+            }
+            if($this->input->post('from')) {
+                // Get all results after
+                $this->db->where('events.date >=',$this->input->post('from'));
+            }
+            if($this->input->post('to')) {
+                // Get all results after
+                $this->db->where('events.date <=',$this->input->post('to'));
+            }
             $this->db->order_by("events.date","DESC");
             $result = $this->db->get("results");
-            $this->data['events'] = $result->result_array();
+            foreach($result->result_array() as $v) {
+                $arr[] = array(anchor("results/event/{$v['event_id']}","{$v['name']}"),$v['date'],$v['category'],$v['weapon']);
+            }
+            $this->table->set_heading('Name','Date','Category');
         }
-        $this->data['query'] = $this->db->last_query();
+       // $this->data['query'] = $this->db->last_query();
+        $this->data['results'] = $this->table->generate($arr);
         $this->data['main_content'] .= $this->load->view('results/results_search_results',$this->data,true);
         $this->load->view('default',$this->data);
     }

@@ -16,7 +16,7 @@ class Results extends MY_Admin {
         $events = array();
         $this->table->set_heading('Date','Time','Name');
         
-        foreach($this::_get_unentered() as $v) {
+        foreach($this->_get_unentered() as $v) {
             $events[] = array($v['date'],$v['time'],anchor('admin/results/entry/'.$v['event_id'],"{$v['name']}"));
         }
         
@@ -65,6 +65,11 @@ class Results extends MY_Admin {
     }
     
     function add_event_result() {
+        if(!($data = json_decode($this->input->post('data')))){
+            echo "Could not decode json!";
+        } else {
+            var_dump($data);
+        }
         // get the input
         // should be able to take files etc.
         

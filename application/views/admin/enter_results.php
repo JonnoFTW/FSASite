@@ -7,10 +7,10 @@ $(document).ready( function() {
     $("form").submit( function(event) {
         event.preventDefault();
         $.ajax({
-            url : "admin/add_event_result",
-            data: {'data':$(this).serialize()};
+            url : "admin/results/add_event_result",
+            data: {'data':$(this).serialize()},
             success : function(data) {
-                $("#").
+                $("#results_error").html(data).hide.fadeIn(1000);
             }
         });
     });
@@ -27,11 +27,12 @@ echo form_hidden(array("name"=>"event_id","value"=>$event_id));
 
 echo $entrants;
 
-echo form_fieldset_close();
 echo form_submit("submit","Submit");
+echo form_fieldset_close();
 echo form_close();
 ?> 
 <div id="results_error"></div>
+<? echo anchor('admin/events/entry/'.$event_id,'Add more entrants to this event'); ?>
 </div>
 </div>
 </div>

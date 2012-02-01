@@ -13,6 +13,12 @@ class  MY_Controller  extends  CI_Controller  {
 		$this->data['menu'] = $this->_generate_menu(); 
         $this->pass_salt = '$2a$07$FdAQgn8nY8NdOqs9OIGIGA$';
         
+        $this->data['EVENT_TYPE'] = array(
+            "Local"=> array('type'=>'Local','description'=>"All local events"),
+            "Robyn-Chaplin"=> array('type'=>'Robyn Chaplin','description'=>"Details of the Robyn Chaplin Memorial Event"),
+            "National"=> array('type'=>'National','description'=>"All national events"),
+            "Events"=> array("type"=>"Events","description"=>"All other events organised by FSA such as dinners and functions")
+        );
         $this->data['GENDERS'] = array(
             'M'=>'Mens',
             'F'=>'Womens',
@@ -90,11 +96,16 @@ class  MY_Controller  extends  CI_Controller  {
 class MY_Admin extends MY_Controller {
 
     function __construct(){
-		parent::__construct();
+		parent::__construct(); 
         //    var_dump($this->session->all_userdata());
             $this->data['title'] = 'Administration';
             if(!$this->session->userdata('logged')){
-                redirect('login');
+                if($this->input->is_ajax_request()) {
+                    echo "Request failed, you will need to login</br>";
+                    return;
+                }
+                else
+                    redirect('login');
             }
         else{
              //   $this->res = $this->db->query("SELECT * FROM user_level");
@@ -116,6 +127,7 @@ class MY_Admin extends MY_Controller {
             }
             $clubs[''] = '';
             $this->data['clubs'] = $clubs;
+            $this->data['main_content'] .= $this->load->view('admin/table_sort',$this->data,true);
 	}
     
     protected function _get_unentered() {

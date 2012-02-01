@@ -15,14 +15,14 @@
 			<p> 
                 <?
                     echo form_label('Category','category');
-                    echo form_dropdown('category',$CATEGORIES);
+                    echo form_dropdown('category',array_merge(array(''=>''),$CATEGORIES));
                 ?>
 				
 			</p>
 			<p>                
                 <?
                     echo form_label('Weapon','weapon');
-                    echo form_dropdown('weapon',$WEAPONS);
+                    echo form_dropdown('weapon',array_merge(array(''=>''),$WEAPONS));
                 ?>
 			</p>
 			<p>
