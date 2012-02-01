@@ -1,5 +1,4 @@
-<script type="text/javascript">
-$(document).ready( function () {
+<script type="text/javascript">$(document).ready( function () {
     $("form").submit( function (event) {
         event.preventDefault();
         var entrants = {'event_id':<? echo $event_id; ?>,'fencers':[]};
@@ -7,10 +6,10 @@ $(document).ready( function () {
             var fencer = {}; 
             fencer['name'] = $(this).text();
             fencer['uid'] = $(this).find("td > input:hidden").val();
-            fencer['entered'] = $(this).find(":input:checked").first().val();
+            fencer['entered'] = Boolean($(this).find(":input:checked").first().val());
             entrants['fencers'].push(fencer);
         });
-      //  console.log(entrants);
+        console.log(entrants);
         $.ajax( {
             url: '<?  echo base_url().'admin/events/add_entrants';?>',
             type: "POST",

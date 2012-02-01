@@ -74,7 +74,7 @@ class Events extends MY_Admin {
         $res = $this->db->get_where('events',array('event_id'=>$id));
         if($res->num_rows() == 0){
             // No such event exists!
-            echo $this->db->last_query();
+          //  echo $this->db->last_query();
            return null;
         } else {
             $this->data['event'] = $res->row_array();
@@ -99,7 +99,7 @@ class Events extends MY_Admin {
             }
             // Determine whether they are entered or not
             $this->db->join('results','results.uid = users.uid','left outer');//->where('`results`.`uid` IS NULL',null,false);
-            $this->db->select('results.uid AS entered, users.first_name, users.last_name, users.uid');
+            $this->db->select('DISTINCT(`results`.`uid`) AS entered, `users`.`first_name`, `users`.`last_name`, `users`.`uid`',null,false);
             $res = $this->db->get('users');
             return $res->result_array();
         }
@@ -120,14 +120,20 @@ class Events extends MY_Admin {
             foreach($data['fencers'] as $k=>$v) {
                 if(isset($fencers[$v['uid']])) {
                     $name = $fencers[$v['uid']]['first_name'] .' '.  $fencers[$v['uid']]['last_name'];
+                    $key = array('uid'=>$this->db->escape($v['uid']),'event_id'=>$this->db->escape($data['event_id']));
+                  //  var_dump($v);
                     if($v['entered']) {
                         // Make sure they are entered
-                        
-                        echo "$name is now entered in this event</br>";
+                        $this->db->query("INSERT IGNORE INTO `results` (`event_id`,`uid`) VALUES ({$key['event_id']},{$key['uid']})");
+                        if($this->db->affected_rows())
+                            echo "$name is now entered in this event</br>";
+                        else 
+                            echo "$name is already in this event!</br>";
                     } else {
                         // Remove them from entrants
-                        //$this->db->
-                        echo "$name is no longer entered in this event</br>";
+                        $this->db->delete('results',array('uid'=>$v['uid'],'event_id'=>$data['event_id']));
+                        if($this->db->affected_rows())
+                            echo "$name is no longer entered in this event</br>";
                     }
                 } else {
                     echo $name." is not elligible for this event </br>";
