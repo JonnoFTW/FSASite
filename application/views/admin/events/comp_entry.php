@@ -4,7 +4,7 @@
         var entrants = {'event_id':<? echo $event_id; ?>,'fencers':[]};
         $("form table tr:not(:first)").each( function () {
             var fencer = {}; 
-            fencer['name'] = $(this).text();
+            fencer['name'] = $.trim($(this).text());
             fencer['uid'] = $(this).find("td > input:hidden").val();
             fencer['entered'] = Boolean($(this).find(":input:checked").first().val());
             entrants['fencers'].push(fencer);

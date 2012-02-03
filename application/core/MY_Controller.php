@@ -12,7 +12,7 @@ class  MY_Controller  extends  CI_Controller  {
         $this->load->library('table');
 		$this->data['menu'] = $this->_generate_menu(); 
         $this->pass_salt = '$2a$07$FdAQgn8nY8NdOqs9OIGIGA$';
-        
+        $this->data['main_content'] = '';
         $this->data['EVENT_TYPE'] = array(
             "Local"=> array('type'=>'Local','description'=>"All local events"),
             "Robyn-Chaplin"=> array('type'=>'Robyn Chaplin','description'=>"Details of the Robyn Chaplin Memorial Event"),
@@ -131,7 +131,7 @@ class MY_Admin extends MY_Controller {
 	}
     
     protected function _get_unentered() {
-        $res = $this->db->select("`events`.`event_id`, `events`.`name`, DATE_FORMAT(`events`.`date`,'%M %e %Y') AS `date`, DATE_FORMAT(`events`.`date`,'%H:%i') as `time`",FALSE)->order_by('events.date',"desc")->join('results','results.event_id = events.event_id','left outer')->where('`results`.`event_id` IS NULL',null,false)->get('events');
+        $res = $this->db->select("`events`.`event_id`, `events`.`name`, DATE_FORMAT(`events`.`date`,'%Y-%c-%d') AS `date`, DATE_FORMAT(`events`.`date`,'%H:%i') as `time`",FALSE)->order_by('events.date',"desc")->join('results','results.event_id = events.event_id','left outer')->where('`results`.`event_id` IS NULL',null,false)->or_where('`results`.`res` IS NULL',null,false)->get('events');
         return $res->result_array();
     }
 }

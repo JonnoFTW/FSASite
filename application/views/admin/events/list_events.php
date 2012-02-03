@@ -16,6 +16,9 @@ if(isset($warning))
     echo $warning;
     
 echo $events;
+
+if(isset($message))
+    echo $message;
 ?>
 </div>
 </div>

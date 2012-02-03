@@ -35,5 +35,6 @@
 		echo form_close();
         ?>
 	</div>
+    <? echo anchor('login/request_reset','Reset Password');?>
 </div>
 </div>
