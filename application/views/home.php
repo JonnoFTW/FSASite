@@ -71,13 +71,21 @@ td:first-child {font-weight: bold;}
 					<div class="block" >
 						<p>FencingSA is grateful to the following sponsors:</p>
                         <?
-                            
-                            foreach(array('Scotch','GSAORS','Be Active') as $key => $i){
-                                echo img(array(
-                                    'src'=>'assets/images/sponsor'.($key+1).".png",
-                                    'title'=>$i,
-                                    'style'=>'margin-left:auto;margin-right:auto;',
-                                    'alt'=>$i))."\n";
+                           // Should probably store in a db table so that they can be readily updated
+                            $sponsors = array(
+                                'Scotch'=>array('link'=>'http://www.scotch.sa.edu.au/',
+                                                'src'=>'assets/images/sponsor1.png'),
+                                'GSAORS'=>array('link'=>'http://www.recsport.sa.gov.au/',
+                                                'src'=>'assets/images/sponsor2.png'),
+                                'Be Active'=>array('link'=>'http://www.beactive.com.au/',
+                                                'src'=>'assets/images/sponsor3.png')
+                            );
+                            foreach($sponsors as $key => $i){
+                                echo anchor($i['link'],img(array(
+                                    'src'=>$i['src'],
+                                    'title'=>$key,
+                                    'style'=>'display:block;margin:auto;',
+                                    'alt'=>$key)))."\n";
                             }
                         ?>
 					</div>

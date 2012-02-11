@@ -83,9 +83,10 @@ class Results extends MY_Admin {
                 }
             }
             if($c == 0){
+            //    var_dump($data);
                 $this->db->where('event_id',$data['event_id']);
                 $this->db->update_batch('results',$data['results'],'uid');
-              //  echo $this->db->last_query();
+            //    echo $this->db->last_query();
                 echo "\nUpdated ".$this->db->affected_rows()." results</br>";
             } else {
                 echo "No results updated</br>";

@@ -13,8 +13,9 @@ class Rules extends MY_Controller {
 	}
 	function type($type = false){
 		$type = str_replace('-', ' ',$type);
-		$this->res = $this->db->query("SELECT * FROM rules WHERE title='$type'");
-		$this->data['res'] = $this->res->result_array();
+		$res = $this->db->get_where("rules",array("title"=>$type));
+		$this->data['res'] = $res->row_array();
+		$this->data['title'] .= ' ::  '.$this->data['res']['title'];
 		$this->data['main_content']  .= $this->load->view('rules/rules',$this->data,true);
 		$this->load->view('default',$this->data);
 	}

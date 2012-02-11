@@ -126,7 +126,7 @@ class Results extends MY_Controller {
             foreach($result->result_array() as $v) {
                 $arr[] = array(anchor("results/event/{$v['event_id']}","{$v['name']}"),$v['date'],$v['category'],$v['weapon']);
             }
-            $this->table->set_heading('Name','Date','Category');
+            $this->table->set_heading('Name','Date','Category','Weapon');
         }
        // $this->data['query'] = $this->db->last_query();
         $this->data['results'] = $this->table->generate($arr);

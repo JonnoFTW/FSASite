@@ -20,7 +20,7 @@ class Home extends MY_Controller {
             $results[$v['event_id']][] = array(
                              'event_name' => "{$date} {$v['name']}",
                               'date' =>  $v['date'],
-                              'name'=> " {$v['first_name']} {$v['last_name']}",
+                              'name'=> anchor("results/user/".$v['uid'],"{$v['first_name']} {$v['last_name']}"),
                               'pos' =>  $this->_addOrdinal($v['res'])
                             );
         }
