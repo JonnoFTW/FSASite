@@ -98,7 +98,7 @@ class User extends MY_Admin {
             return;
         } */
       //  var_dump($this->input->post());
-        $required = array("last_name","first_name","phone"); 
+        
         $uid = $this->_uuid();
         $vals = array(
                 'uid' => $uid,
@@ -113,29 +113,10 @@ class User extends MY_Admin {
                 'state'=>$this->input->post('state'), #mailing address out of state?!
                 'clubid'=> $this->input->post('club')
         );
-        if($dob = $this->_date_check($this->input->post('dob'))) {
-            $vals['dob'] = $dob;
-        } else {
-            echo "Please enter a properly formatted date: dd/mm/yyyy";
+        if(!$err = $this->_validate_input($vals)) {
             return;
         }
-        $err = false;
-        if(!filter_var($vals['email'],FILTER_VALIDATE_EMAIL)){
-            echo "Please provide a properly formatted email<br/>";
-            $err = true;
-        }
-        foreach($required as $v){
-            if(!$vals[$v]) {
-                echo "Please provide a {$v}</br>";
-                $err = true;
-            }
-        }
-     //   var_dump($this->data['clubs']);
-     //   echo $vals['clubid'];
-        if(!array_key_exists($vals['clubid'],$this->data['clubs'])) {
-            echo "Please select a valid club<br/>";
-            $err = true;
-        }
+
         if(!$err){
             if($this->session->userdata('level') == 'executive'){
                 // Can make any type of user
@@ -202,7 +183,31 @@ class User extends MY_Admin {
             echo "You are not permitted to perform this action";
         }
     }
-    
+    private function _validate_input($vals) {
+        $err = false;
+        if($dob = $this->_date_check($this->input->post('dob'))) {
+            $vals['dob'] = $dob;
+        } else {
+            $err = true;
+            echo "Please enter a properly formatted date- dd/mm/yyyy<br/>";
+        }
+        if(!filter_var($vals['email'],FILTER_VALIDATE_EMAIL)){
+            $err = true;
+            echo "Please provide a properly formatted email<br/>";
+        }
+        if(!array_key_exists($vals['clubid'],$this->data['clubs'])) {
+            $err = true;
+            echo "Please select a valid club<br/>";
+        }
+        $required = array("last_name","first_name","phone"); 
+        foreach($required as $v){
+            if(!$vals[$v]) {
+                echo "Please provide a {$v}</br>";
+                $err = true;
+            }
+        }
+        return $err;  
+    }
     function update_user(){
         // Should be ajax only
         if(!$this->input->is_ajax_request()) {
@@ -264,14 +269,13 @@ class User extends MY_Admin {
             'post_code'=>$this->input->post('post_code'),
             'state'=>$this->input->post('state'), #mailing address out of state?!
             'licensed'=>$this->input->post('licensed'), #should be a date("Y") thing, but only for admin
-            'dob'=>$this->input->post('dob')
+            'dob'=>$this->input->post('dob'),
+            'clubid'=> $this->input->post('club')
         );
-        if($dob = $this->_date_check($this->input->post('dob'))) {
-            $vals['dob'] = $dob;
-        } else {
-            echo "Please enter a properly formatted date- dd/mm/yyyy";
+        if(!$this->_validate_input($vals)) {
             return;
         }
+
         // A club should not be able to change what club it is in
         $res = $this->db->get_where('clubs',array('clubid'=>'uid'));
         if($res->num_rows() == 0) {
