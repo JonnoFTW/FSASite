@@ -48,4 +48,10 @@ class Home extends MY_Controller {
 		$this->data['title'] = 'Home Page';
 		$this->load->view('default',$this->data);
 	}
+    
+    function getting_started() {
+        $this->data['title'] = "Getting Started";
+        $this->data['main_content'] = $this->load->view('home/getting_started',$this->data,true);
+        $this->load->view('default',$this->data);
+    }
 }

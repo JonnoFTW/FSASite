@@ -99,7 +99,7 @@ td:first-child {font-weight: bold;}
 					</h2>
 					<div class="block" id="blockquote">
 						<blockquote>
-							<p>Welcome to FencingSA, the website for all fencing in South Australia. If you are curious about about fencing then find some information <a href="documents/info/starting.php">here</a> or read the news below to find out what is happening with your local fencing sports scene.</p>
+							<p>Welcome to FencingSA, the website for all fencing in South Australia. If you are curious about about fencing then find some information <? echo anchor('home/getting_started','here'); ?> or read the news below to find out what is happening with your local fencing sports scene.</p>
 							<p class="cite">
 								<cite>FencingSA Executive</cite>
 							</p>

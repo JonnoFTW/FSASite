@@ -38,15 +38,7 @@ $(document).ready(function() {
             data: $(this).serialize() ,
             success: function(data) { 
                 console.log(data);
-                if(data.split(" ")[0] != "Success"){
-                    // We have an error, display the message
-                    console.log("Error");
-                    $("#input_error").html("<p>An error: </br>"+data+"</p>").hide().fadeIn(500);
-                } else {
-                    // Success, tell the user this
-                    console.log("Success");
-                    $('#forms').html(data).hide().fadeIn(1500);
-                }
+                $("#input_error").html(data).hide().fadeIn(500);
             } 
         });
         return false;
@@ -90,7 +82,9 @@ $(document).ready(function() {
         'State'=>     array('value'=>$user['state'],'name'=>'state'),
         'DOB (dd/mm/yyyy)'=>       array('value'=>$user['dob'],'name'=>'dob','type'=>'date','id'=>'datepicker')
     );
-
+    if(!$new_user) {
+        echo form_hidden('uid',$user['uid']);
+    }
     echo "<p>";
     foreach($attrs as $k=>$v){
         echo form_label($k,$v['name']);

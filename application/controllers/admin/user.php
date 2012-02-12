@@ -97,7 +97,7 @@ class User extends MY_Admin {
             echo "You cannot make users!";
             return;
         } */
-        var_dump($this->input->post());
+      //  var_dump($this->input->post());
         $required = array("last_name","first_name","phone"); 
         $uid = $this->_uuid();
         $vals = array(
@@ -111,9 +111,14 @@ class User extends MY_Admin {
                 'suburb'=>$this->input->post('suburb'), 
                 'post_code'=>$this->input->post('post_code'),
                 'state'=>$this->input->post('state'), #mailing address out of state?!
-                'clubid'=> $this->input->post('club'),
-                'dob'=> $this->input->post('dob')
+                'clubid'=> $this->input->post('club')
         );
+        if($dob = $this->_date_check($this->input->post('dob'))) {
+            $vals['dob'] = $dob;
+        } else {
+            echo "Please enter a properly formatted date: dd/mm/yyyy";
+            return;
+        }
         $err = false;
         if(!filter_var($vals['email'],FILTER_VALIDATE_EMAIL)){
             echo "Please provide a properly formatted email<br/>";
@@ -125,7 +130,9 @@ class User extends MY_Admin {
                 $err = true;
             }
         }
-        if($vals['clubid'] || !array_key_exists($vals['clubid'],$this->data['clubs'])) {
+     //   var_dump($this->data['clubs']);
+     //   echo $vals['clubid'];
+        if(!array_key_exists($vals['clubid'],$this->data['clubs'])) {
             echo "Please select a valid club<br/>";
             $err = true;
         }
@@ -137,6 +144,16 @@ class User extends MY_Admin {
                     // New clubs can only be made by execs
                         $this->db->insert('users',$vals);
                         $this->db->insert('clubs',array("clubid"=>$uid,"short_name"=>$this->input('short_name'),"description"=>$this->input('description')));
+                        // Send them an email
+                        $this->load->library('email');
+                        $config = array('mailtype'=>'html');
+                        $this->email->initialize($config);
+                        $this->email->from('webmaster@fencingsa.org.au');
+                        $this->email->to($user['email']);
+                        $this->email->subject('Your account at fencingsa.org.au');
+                        // Message should probably be in a view
+                        $this->email->message('You are now a club recorded by Fencing SA. You can logon to '.anchor('admin','fencings.org.au/admin').'. Use the password: "'.$pass.'" (without the quote marks), on the site you can enter results, update information, administrate users, update results for competitions and create competitions, as well as administrating users. You may also want to update your password, which is accessible from the admin page');
+                        $this->email->send();
                         
                     } else {
                         echo "Please provide a short name and description for the club<br/>";
@@ -147,7 +164,7 @@ class User extends MY_Admin {
                     $this->db->insert('user_level',array("uid"=>$uid,'level'=>'executive','note'=>$this->input->post('note')));
                     //Make them an exec and notify them of this
                     $this->_make_exec($uid,$vals);
-                    echo "Made a new executive";
+                    echo "Made a new executive</br>";
                 } else {
                     // We are making an 'other' user
                     $this->db->insert('users',$vals);
@@ -156,7 +173,7 @@ class User extends MY_Admin {
                 // A club is adding a new user, they must be 'other' type
                 $this->db->insert('users',$vals);
             }
-            echo "User was successfully created<br/> ";
+            echo "User was successfully created<br/>".anchor('admin/user/id/'.$uid,'View their account here');
         }  else {
             echo "User was not created<br/>";
         }
@@ -185,7 +202,6 @@ class User extends MY_Admin {
             echo "You are not permitted to perform this action";
         }
     }
-    
     
     function update_user(){
         // Should be ajax only
@@ -247,9 +263,15 @@ class User extends MY_Admin {
             'suburb'=>$this->input->post('suburb'),
             'post_code'=>$this->input->post('post_code'),
             'state'=>$this->input->post('state'), #mailing address out of state?!
-            'licensed'=>$this->input->post('licensed') #should be a date("Y") thing, but only for admin
+            'licensed'=>$this->input->post('licensed'), #should be a date("Y") thing, but only for admin
+            'dob'=>$this->input->post('dob')
         );
-  
+        if($dob = $this->_date_check($this->input->post('dob'))) {
+            $vals['dob'] = $dob;
+        } else {
+            echo "Please enter a properly formatted date- dd/mm/yyyy";
+            return;
+        }
         // A club should not be able to change what club it is in
         $res = $this->db->get_where('clubs',array('clubid'=>'uid'));
         if($res->num_rows() == 0) {
@@ -260,8 +282,9 @@ class User extends MY_Admin {
             echo "You cannot change the club a club belongs to!";
         }
         // If a user is changed away from an exec, their password and level should be stripped
-        $this->db->update('users',$vals,array('uid',$id)); 
-        if($this->db->rows_affected())
+        $this->db->update('users',$vals,array('uid'=>$id)); 
+        echo $this->db->last_query();
+        if($this->db->affected_rows())
             echo "Updated user";
         else 
             echo "Nothing was updated!";
@@ -274,9 +297,12 @@ class User extends MY_Admin {
         $encrypt_pass = crypt($pass,$this->pass_salt);
         $this->db->update('users',array('pass'=>$encrypt_pass),array('uid'=>$id));
         $this->load->library('email');
+        $config = array('mailtype'=>'html');
+        $this->email->initialize($config);
         $this->email->from('webmaster@fencingsa.org.au');
         $this->email->to($user['email']);
         $this->email->subject('Your account at fencingsa.org.au');
+        // Message should probably be in a view
         $this->email->message('You are now an member of the FencingSA executive. You can logon to '.anchor('admin','fencings.org.au/admin').'. Use the password: "'.$pass.'" (without the quote marks), on the site you can enter results, update information, administrate users, update results for competitions and create competitions, as well as administrating users. You may also want to update your password, which is accessible from the admin page');
         $this->email->send();
     }
@@ -285,7 +311,14 @@ class User extends MY_Admin {
         $this->db->update('users',array("pass"=>null),array("uid"=>$id));
         $this->db->delete('user_level',array("uid"=>$id));
     }
-    
+    private function _date_check($date) {
+        $parts = explode('/',$date);
+        if(checkdate($parts[1],$parts[0],$parts[2])) {
+            return "{$parts[2]}-{$parts[1]}-{$parts[0]}";
+        } else {
+            return false;
+        }
+    }
     function licenses() {
         // Show all users with their licenses,
         if($this->session->userdata('level') != 'executive') {
