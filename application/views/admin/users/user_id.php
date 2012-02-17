@@ -82,6 +82,14 @@ $(document).ready(function() {
         'State'=>     array('value'=>$user['state'],'name'=>'state'),
         'DOB (dd/mm/yyyy)'=>       array('value'=>$user['dob'],'name'=>'dob','type'=>'date','id'=>'datepicker')
     );
+    if($user['isClub']) {
+        unset($attrs['DOB (dd/mm/yyyy)']);
+        echo "<p id='exec'>";
+        echo $club_form;
+        echo form_hidden("club",$user['uid']);
+        echo form_hidden("type","club");
+        echo "</p>";
+    }
     if(!$new_user) {
         echo form_hidden('uid',$user['uid']);
     }
