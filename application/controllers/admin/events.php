@@ -5,10 +5,11 @@ class Events extends MY_Admin {
 
     function __construct(){
 		parent::__construct(); 
-        if($this->session->userdata('level') != 'executive') {
-            $this->data['main_content'] .=  $this->load->view('admin/forbidden',$this->data,true);
-            $this->load->view('default',$this->data);
-        }
+        
+       // if($this->session->userdata('level') != 'executive') {
+       //     $this->data['main_content'] .=  $this->load->view('admin/forbidden',$this->data,true);
+       //     $this->load->view('default',$this->data);
+       // }
     }
     function index(){
         // Give option of adding events, or adding competitors

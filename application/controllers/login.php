@@ -11,16 +11,23 @@ class Login extends MY_Controller {
 	}
 	public function index(){
         if($this->input->post('user') && $this->input->post('pass')){
+            $this->db->select("*, (users.clubid = clubs.clubid) AS isClub");
             $this->db->where(array('email'=>$this->input->post('user'),'pass'=>crypt($this->input->post('pass'),$this->pass_salt)));
-            $this->db->join('user_level','users.uid = user_level.uid');
+            $this->db->join('user_level','users.uid = user_level.uid','left');
+            $this->db->join('clubs','users.uid = clubs.clubid','left');
             $query = $this->db->get('users');
             if($query->num_rows() > 0) {
                 $user = $query->row_array();
+                if($user['isClub']) {
+                    $user['level'] = 'club';
+                    $user['uid'] = $user['clubid'];
+                }
+          //      var_dump($user);
                 $this->session->set_userdata(array('uid'=>$user['uid'],
                                                    'logged'=>true,
                                                    'name'=>$user['first_name'].' '.$user['last_name'],
                                                    'clubid'=>$user['clubid'],
-                                                   'level'=>$user['level'],
+                                                   'level'=> $user['level'],
                                                    ));   
                 redirect('admin');
             }
@@ -50,6 +57,8 @@ class Login extends MY_Controller {
             if($res->num_rows() > 0) {
                 // Generate a key
                 $this->load->library('email');
+                $config = array('mailtype'=>'html');
+                $this->email->initialize($config);
                 $key = uniqid();
                 $this->db->insert('reset_keys',array('key'=>$key,'requested'=>date("'Y-m-d H:i:s'"),"uid"=>$user));
                 $key = $this->db->insert_id();

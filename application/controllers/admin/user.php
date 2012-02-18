@@ -7,8 +7,9 @@ class User extends MY_Admin {
 		parent::__construct();	
         $this->data['title'] .= ':: Manage Users';
     }
-    
+
     function index($filter = false) {
+      //  var_dump($this->session->all_userdata());
         $this->db->select('short_name')->from('clubs');
         $result = $this->db->get();
         $this->db->from('users');
@@ -20,21 +21,17 @@ class User extends MY_Admin {
             if($filter == 'licensed')
                 $this->db->where('users.licensed',date("Y"));
             elseif($filter == 'unlicensed')
-                $this->db->where('users.licensed !=',date("Y"))->or_where('`users`.`licensed` IS NULL',null,false);
+                $this->db->where('users.licensed !=',date("Y"));//->or_where('`users`.`licensed` IS NULL',null,false);
             elseif($filter == 'clubs')
                 $this->db->where('`users`.`uid` = `users`.`clubid`',null,false);
         }
         if ($this->session->userdata('level') == 'club') {
             // Show users that belong to club
-            $this->db->where('users.clubid',$this->session->userdata[]);
-            $this->result = $this->db->get();
-            $this->data['users'] = $this->result->result_array();
+            $this->db->where('users.clubid',$this->session->userdata['clubid']);
         }
-        else {
-            // Show all users
-            $this->result = $this->db->get();
-            $this->data['users'] = $this->result->result_array();
-        }
+        $this->result = $this->db->get();
+        $this->data['users'] = $this->result->result_array();
+     //   echo $this->db->last_query();
         foreach($this->data['users'] as &$v){
             $v['last_name'] = anchor('admin/user/id/'.$v['uid'],$v['last_name']);
             $v['email'] = mailto($v['email'],$v['email']);
@@ -61,7 +58,7 @@ class User extends MY_Admin {
     }
     function id($id = false) {
         if($id) {
-            $this->db->select('users.uid, last_name, first_name, users.email, users.dob , users.phone, users.licensed,clubs.short_name, users.address_1, users.address_1,users.address_2, users.suburb, users.post_code, users.state, (`clubs`.`clubid` = `users`.`uid` ) as `isClub` ,clubs.short_name as club, clubs.description as club_description, user_level.level as level, user_level.note as note');
+            $this->db->select('users.uid, users.clubid, last_name, first_name, users.email, users.dob , users.phone, users.licensed,clubs.short_name, users.address_1, users.address_1,users.address_2, users.suburb, users.post_code, users.state, (`clubs`.`clubid` = `users`.`uid` ) as `isClub` ,clubs.short_name as club, clubs.description as club_description, user_level.level as level, user_level.note as note');
             $this->db->join('clubs','clubs.clubid = users.clubid','left');
             $this->db->join('user_level','user_level.uid = users.uid','left');
             $this->db->where('users.uid',$id);
@@ -72,11 +69,10 @@ class User extends MY_Admin {
                 $this->data['user'] = $result->row_array();
                 if($this->session->userdata('level') != 'club' || $this->session->userdata('clubid') == $this->data['user']['clubid']) {
                     // club accounts can only update information of those people in their club
-                    $this->data['warning'] = "You may only view and update users from your club";
                     $this->data['main_content'] .= $this->load->view('admin/users/user_id',$this->data,true);
                 } else {
                     // User is not in their club or they are not admin 
-                    $this->data['warning'] = "You";
+                    $this->data['warning'] = "You may only edit users from your club or your own club";
                     $this->data['main_content'] .= $this->load->view('admin/users/user_error',$this->data,true);
                 }
             } else {
@@ -188,7 +184,7 @@ class User extends MY_Admin {
             echo "You are not permitted to perform this action";
         }
     }
-    private function _validate_input($vals) {
+    private function _validate_input(&$vals) {
         $err = false;
         if(!$this->input->post('dob'))
             goto email;
@@ -218,6 +214,7 @@ class User extends MY_Admin {
             }
         }
      //   echo "Input status:$err<br/>";
+        $vals = array_filter($vals);
         return $err;  
     }
     function update_user(){
@@ -288,7 +285,7 @@ class User extends MY_Admin {
         if($this->_validate_input($vals)) {
             return;
         }
-
+        
         // A club should not be able to change what club it is in
         $res = $this->db->get_where('clubs',array('clubid'=>'uid'));
         if($res->num_rows() == 0) {
