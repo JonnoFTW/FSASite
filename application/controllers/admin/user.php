@@ -58,7 +58,7 @@ class User extends MY_Admin {
     }
     function id($id = false) {
         if($id) {
-            $this->db->select('users.uid, users.clubid, last_name, first_name, users.email, users.dob , users.phone, users.licensed,clubs.short_name, users.address_1, users.address_1,users.address_2, users.suburb, users.post_code, users.state, (`clubs`.`clubid` = `users`.`uid` ) as `isClub` ,clubs.short_name as club, clubs.description as club_description, user_level.level as level, user_level.note as note');
+            $this->db->select('users.uid, users.gender, users.clubid, last_name, first_name, users.email, users.dob , users.phone, users.licensed,clubs.short_name, users.address_1, users.address_1,users.address_2, users.suburb, users.post_code, users.state, (`clubs`.`clubid` = `users`.`uid` ) as `isClub` ,clubs.short_name as club, clubs.description as club_description, user_level.level as level, user_level.note as note');
             $this->db->join('clubs','clubs.clubid = users.clubid','left');
             $this->db->join('user_level','user_level.uid = users.uid','left');
             $this->db->where('users.uid',$id);
@@ -95,24 +95,15 @@ class User extends MY_Admin {
         } */
       //  var_dump($this->input->post());
         
-        $uid = $this->_uuid();
-        $vals = array(
-                'uid' => $uid,
-                'last_name'=>$this->input->post('last_name'),
-                'first_name'=>$this->input->post('first_name'),
-                'email'=>$this->input->post('email'),
-                'phone'=>$this->input->post('phone'),
-                'address_1'=>$this->input->post('addr1'),
-                'address_2'=>$this->input->post('addr2'),
-                'suburb'=>$this->input->post('suburb'), 
-                'post_code'=>$this->input->post('post_code'),
-                'state'=>$this->input->post('state'), #mailing address out of state?!
-                'clubid'=> $this->input->post('club')
-        );
-        if($err = $this->_validate_input($vals)) {
+
+        if(!($vals = $this->_validate_input())) {
             echo "Please fix errors<br/>";
+            $err = true;
             return;
+        } else {
+            $err = false;
         }
+        $uid = $vals['uid'] = $this->_uuid();
 
         if(!$err){
             if($this->session->userdata('level') == 'executive'){
@@ -184,7 +175,21 @@ class User extends MY_Admin {
             echo "You are not permitted to perform this action";
         }
     }
-    private function _validate_input(&$vals) {
+    private function _validate_input() {
+        $vals = array(
+            'last_name'=>$this->input->post('last_name'),
+            'first_name'=>$this->input->post('first_name'),
+            'email'=>$this->input->post('email'),
+            'phone'=>$this->input->post('phone'),
+            'address_1'=>$this->input->post('addr1'),
+            'address_2'=>$this->input->post('addr2'),
+            'suburb'=>$this->input->post('suburb'), 
+            'post_code'=>$this->input->post('post_code'),
+            'state'=>$this->input->post('state'), #mailing address out of state?!
+            'clubid'=> $this->input->post('club'),
+            'gender'=> $this->input->post('gender')
+        );
+    
         $err = false;
         if(!$this->input->post('dob'))
             goto email;
@@ -203,9 +208,10 @@ class User extends MY_Admin {
             $err = true;
             echo "Please select a valid club<br/>";
         }
-        $required = array("last_name","first_name","phone");
-        if($this->input->post('type') == 'club')
-            unset($required[1]);
+        $required = array("last_name","first_name","phone","gender");
+        if($this->input->post('type') == 'club') {
+            unset($required[1],$vals['first_name'],$required[3],$vals['gender']);
+        }
       //  var_dump($required);
         foreach($required as $v){
             if(!$vals[$v]) {
@@ -215,8 +221,12 @@ class User extends MY_Admin {
         }
      //   echo "Input status:$err<br/>";
         $vals = array_filter($vals);
-        return $err;  
+        if($err)
+            return $err;  
+        else 
+            return $vals;
     }
+    
     function update_user(){
         // Should be ajax only
         if(!$this->input->is_ajax_request()) {
@@ -267,24 +277,11 @@ class User extends MY_Admin {
             echo "User is now an executive</br>";
         }
         
-        // We have a real user who we can update
-        $vals = array(
-            'last_name'=>$this->input->post('last_name'),
-            'first_name'=>$this->input->post('first_name'),
-            'email'=>$this->input->post('email'),
-            'phone'=>$this->input->post('phone'),
-            'address_1'=>$this->input->post('addr1'),
-            'address_2'=>$this->input->post('addr2'),
-            'suburb'=>$this->input->post('suburb'),
-            'post_code'=>$this->input->post('post_code'),
-            'state'=>$this->input->post('state'), #mailing address out of state?!
-            'licensed'=>$this->input->post('licensed'), #should be a date("Y") thing, but only for admin
-            'dob'=>$this->input->post('dob'),
-            'clubid'=> $this->input->post('club')
-        );
-        if($this->_validate_input($vals)) {
+
+        if(!($vals = $this->_validate_input())) {
             return;
         }
+        $vals['uid'] = $id;
         
         // A club should not be able to change what club it is in
         $res = $this->db->get_where('clubs',array('clubid'=>'uid'));

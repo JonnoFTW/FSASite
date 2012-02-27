@@ -1,0 +1,3 @@
+<?
+    $config['mailtype'] = 'html';
+?>

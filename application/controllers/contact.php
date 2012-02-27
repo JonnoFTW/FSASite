@@ -43,11 +43,12 @@ class Contact extends MY_Controller {
             $name = $this->input->post('name');
             $subject = "Fencing SA Enquiry";
             $message = "From: {$name}\n{$msg}";
-            $headers = "From: {$email}" . "\r\n" .
-                       "Reply-To: {$email}" . "\r\n" .
-                       'X-Mailer: PHP/' . phpversion();
-            // Store the email in a table or something so it can be changed later
-            mail($this->data['email'],$subject,$message,$headers);
+            $this->load->library('email');
+            $this->email->from($email);
+            $this->email->to('enquiries@fencingsa.org.au');
+            $this->email->subject('Enquiry from FencingSA website');
+            $this->email->message(htmlentities($message));
+            $this->email->send();
             $this->data['mailed'] = true;
         }
 		$this->data['main_content'] = $this->load->view('contact',$this->data,true);

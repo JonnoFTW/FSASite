@@ -26,8 +26,10 @@ $(document).ready(function() {
         if(v == 'club'){
             // Add new form elements
             $(form).appendTo($("p#exec"));
+            $("#non_club").hide();
         } else {
             $("#club_form").remove();
+            $("#non_club").show();
         }
     });
     if($("select#types").val() == 'club')  $(form).appendTo($("p#exec"));
@@ -51,7 +53,7 @@ $(document).ready(function() {
         $user = array();
         $user['isClub'] = false;
         $user['type'] = 2;
-        $user['first_name'] = $user['club']  = $user['dob'] = 
+        $user['first_name'] = $user['club']  = $user['dob'] =  $user['gender'] = 
         $user['last_name'] = $user['email'] = $user['phone'] = $user['address_1'] = $user['address_2'] = 
         $user['state'] = $user['post_code'] = $user['suburb'] =  $user['level'] = "";
         echo heading("New User",2);
@@ -99,8 +101,12 @@ $(document).ready(function() {
         echo form_input($v);
     } 
     if(!$user['isClub']) {
-    echo form_label('Club','club');
-    echo form_dropdown('club',$clubs,$user['club']);
+        echo '<span id="non_club">';
+        echo form_label('Club','club');
+        echo form_dropdown('club',$clubs,$user['club']);
+        echo form_label('Gender','gender');
+        echo form_dropdown('gender',array('M'=>'Male','F'=>'Female')); // need to validate this as well
+        echo "</span>";
     }
     echo "</p>";
     if($this->session->userdata('level') != 'club' && !$user['isClub']) {
@@ -116,13 +122,14 @@ $(document).ready(function() {
             else{
                 $types['club'] = 'Club';
                 $user['level'] = 'other';
+                
             }
         }               
-                        // change this in the db to be 
-                        //  default, check if a user can have 
-                        // more than one type. More types in fututure?
-                        // probably not, and can just be another field
-                        // in the users table.
+        // change this in the db to be 
+        //  default, check if a user can have 
+        // more than one type. More types in future?
+        // probably not, and can just be another field
+        // in the users table.
         if(!$user['isClub']) {                                                    
             echo form_dropdown('type',$types,$user['level'],'id="types"');
             if($user['level'] == 'executive'){
