@@ -143,7 +143,37 @@ class Events extends MY_Admin {
         }
         // insert it into the entrants for that compettition id
     }
-        
+    function cancel($id = false) {
+        if($id) {
+            // Cancel this event and notify entrants by email
+            $res = $this->db->get_where('events',array('event_id'=>$id,'cancelled'=>0));
+            if($res->num_rows() == 0) {
+                // This event does not exist or is already cancelled
+                echo "This event does not exist or is alredy cancelled";
+            } else {
+                // We cancel this event and notify entrants by email
+                // do we delete them from the entrants table too?
+                $this->db->update('events',array('cancelled'=>1),"event_id = ".$id);
+                $res = $this->db->join('results','events.event_id = results.event_id')->join('users','users.uid = results.uid')->get('events');
+                foreach($res->result_array() as $v) {
+                    $this->mail();
+                }
+                echo "The event has been cancelled and entrants have been notified by email";
+            }
+        } else {
+            // List future events that are not cancelled
+            $res = $this->db->order_by('date','asc')->get_where('events',array('cancelled'=>0));
+            $events = array();
+            foreach($res->result_array() as $v) {
+                $events[] = array($v['date'],$v['name'],anchor('admin/events/cancel','Cancel',array('event_id'=>$id)));
+            }
+            $this->table->set_heading('Date','Name','Cancel');
+            $this->data['events'] = $this->table->generate($events); 
+            $this->data['main_content'] .= $this->load->view('admin/events/cancel_events',$this->data,true);
+            $this->load->view('default',$this->data);
+        }
+    }
+    
     function entry($id = false) { 
         if($id) {
         

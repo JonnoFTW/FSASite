@@ -34,7 +34,11 @@ class Calendar extends MY_Controller {
             ));
             $arr = array();
             foreach($v as $w) {
-                $arr[] = array(anchor('results/event/'.$w['event_id'],$w['time']),$w['name'],$w['weapon'],$w['gender'],$w['category']);
+                if($w['cancelled'])
+                    $link = $w['time']. ' [CANCELLED]';
+                else
+                    $link = anchor('results/event/'.$w['event_id'],$w['time']);
+                $arr[] = array($link,$w['name'],$w['weapon'],$w['gender'],$w['category']);
             }
             $tables[] = $this->table->generate($arr);
             $this->table->clear();
@@ -56,7 +60,7 @@ class Calendar extends MY_Controller {
             
 		}
 
-		$sql = "SELECT event_id, name, weapon, category, gender, type, date_format(date,'%W %D %M, %Y') as date, date_format(date,'%k:%i') as time  FROM events WHERE type = '$type' AND year(date) = $year"; 
+		$sql = "SELECT event_id, name, weapon, category, gender, type, date_format(date,'%W %D %M, %Y') as date, date_format(date,'%k:%i') as time, cancelled FROM events WHERE type = '$type' AND year(date) = $year order by events.date asc"; 
         $result = $this->db->query($sql);
 		if(!$type|| $result->num_rows() == 0){
 			$this->data['main_content']  .= $this->load->view('calendar/calendar_error','',true);

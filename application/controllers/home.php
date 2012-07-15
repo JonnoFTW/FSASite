@@ -9,7 +9,7 @@ class Home extends MY_Controller {
 	public function index(){
 		$result = $this->db->query('SELECT * FROM news, users WHERE news.author = users.uid ORDER BY posted desc LIMIT 0,3');
 		$this->data['news'] = $result->result_array();
-        $result = $this->db->order_by("date","desc")->where('`events`.`date` > NOW() ',null,false)->get('events',10);
+        $result = $this->db->order_by("date","asc")->where('`events`.`date` > NOW() ',null,false)->get('events',10);
         $this->data['events'] = $result->result_array();
 
         $results = array();

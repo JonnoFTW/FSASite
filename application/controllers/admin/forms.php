@@ -7,10 +7,6 @@ class Forms extends MY_Admin {
     function __construct(){
 		parent::__construct();
         $this->data['title'] .= " :: Manage Forms and Resources";
-        if($this->session->userdata('level') != "executive") {
-            $this->data['main_content'] .=  $this->load->view('admin/forbidden',null,true);
-            $this->load->view('default',$this->data);
-        }   
         $this->load->helper('file'); 
         $this->types = array("res"=>"Resources","comp"=>"Competition Resources");
     }
