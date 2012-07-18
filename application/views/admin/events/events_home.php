@@ -6,6 +6,8 @@
 <?
 if($this->session->userdata('level') == 'executive'){
     echo anchor('admin/events/add','Add events');
+echo "</br>";
+    echo anchor('admin/events/cancel','Cancel Events');
 }
 echo "</br>";
     echo anchor('admin/events/entry','Enter fencers in events')
