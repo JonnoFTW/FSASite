@@ -63,6 +63,8 @@ class Events extends MY_Admin {
             elseif ($i['gender'] == "O") $i['gender'] = "O";
             if($i['name'] == "") 
                 $i['name'] = "{$i['category']} {$i['gender']} {$i['weapon']}";
+            if($i['name'] != "")
+                $i['titled'] = true;
             $this->db->insert('events',$i);
         }
         // return success or failure
@@ -93,13 +95,14 @@ class Events extends MY_Admin {
                 $this->db->where("YEAR(DATE_SUB('$date', INTERVAL TO_DAYS(`users`.`dob`) DAY)) <= ".substr($cat,1),null, false);
             }
             if($cat == 'Veteran'){
-                $this->db->where('YEAR(DATE_SUB(`events`.`date`, INTERVAL TO_DAYS(`users`.`dob`))) >= 40',null,false);
+                $this->db->where('YEAR(DATE_SUB(`events`.`date`, INTERVAL TO_DAYS(`users`.`dob`) DAY)) >= 40',null,false);
             }
             if($this->session->userdata('level') == 'club'){
                 $this->db->where('users.clubid',$this->session->userdata('uid'));
             }
             // Determine whether they are entered or not
-            $this->db->join('results','results.uid = users.uid','left outer');//->where('`results`.`uid` IS NULL',null,false);
+            $this->db->from('events')->where('events.event_id',$id);
+            $this->db->join('results','results.uid = users.uid','left outer')->where('`users`.`uid` != `users`.`clubid`',null,false);
             $this->db->select('DISTINCT(`results`.`uid`) AS entered, `users`.`first_name`, `users`.`last_name`, `users`.`uid`',null,false);
             $res = $this->db->get('users');
             return $res->result_array();
@@ -145,27 +148,38 @@ class Events extends MY_Admin {
     }
     function cancel($id = false) {
         if($id) {
+        
             // Cancel this event and notify entrants by email
             $res = $this->db->get_where('events',array('event_id'=>$id,'cancelled'=>0));
             if($res->num_rows() == 0) {
                 // This event does not exist or is already cancelled
                 echo "This event does not exist or is alredy cancelled";
             } else {
+                $this->load->library('email');
                 // We cancel this event and notify entrants by email
                 // do we delete them from the entrants table too?
                 $this->db->update('events',array('cancelled'=>1),"event_id = ".$id);
-                $res = $this->db->join('results','events.event_id = results.event_id')->join('users','users.uid = results.uid')->get('events');
+                $res = $this->db->join('results','events.event_id = results.event_id')->join('users','users.uid = results.uid')->get_where('events',array('events.event_id'=>$id));
+                $entrants = array();
                 foreach($res->result_array() as $v) {
-                    $this->mail();
+                    $this->email->from('webmaster@fencingsa.org.au', 'Webmaster');
+                    $this->email->to($v['email']); 
+                    $entrants[] = $v['email'].': '.$v['first_name']. ' '. $v['last_name'] ;
+                    $this->email->subject('An event you were entered in has been cancelled');
+                    $this->email->message('The event: '.$v['name']. ' on '.$v['date']. ' has been cancelled. Apologies for any inconvenience caused');	
+
+                    $this->email()->send();
                 }
-                echo "The event has been cancelled and entrants have been notified by email";
+                $this->data['msg'] = "<h3>The event has been cancelled and entrants have been notified by email</h3>";
+                $this->data['msg'] .= ul($entrants);
+                $this->cancel();
             }
         } else {
             // List future events that are not cancelled
-            $res = $this->db->order_by('date','asc')->get_where('events',array('cancelled'=>0));
+            $res = $this->db->order_by('date','asc')->where('`events`.`date` > NOW()',null,false)->get_where('events',array('cancelled'=>0));
             $events = array();
             foreach($res->result_array() as $v) {
-                $events[] = array($v['date'],$v['name'],anchor('admin/events/cancel','Cancel',array('event_id'=>$id)));
+                $events[] = array($v['date'],$v['name'],anchor('admin/events/cancel/'.$v['event_id'],'Cancel',array('event_id'=>$id)));
             }
             $this->table->set_heading('Date','Name','Cancel');
             $this->data['events'] = $this->table->generate($events); 
