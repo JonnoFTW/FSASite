@@ -49,8 +49,8 @@ class Rankings extends MY_Controller {
         $this->db->order_by('events.date','ASC');
         $result = $this->db->join('users','users.uid = results.uid','left outer')/*->join('clubs','clubs.clubid = users.clubid')*/->join('events','events.event_id = results.event_id','right outer')->get('results');
         
-        echo $this->db->last_query();
-        echo "\n";
+   //     echo $this->db->last_query();
+     //   echo "\n";
         $this->data['wep'] = $weapon;
         $this->data['year'] = $year;
         $this->data['category'] = $category;

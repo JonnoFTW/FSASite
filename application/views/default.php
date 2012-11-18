@@ -35,9 +35,7 @@ echo doctype('xhtml11');
 <div class="container_12">
 	<div class="grid_12" >
 		<h1 id="branding" >
-			<a href="home">
-				<? echo img("assets/images/fsa.png") ?>
-			</a>
+			<? echo anchor("home",img("assets/images/fsa.png") );?>
 		</h1>
 	</div>
 	<div class="clear"></div>

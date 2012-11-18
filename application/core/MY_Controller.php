@@ -57,20 +57,21 @@ class  MY_Controller  extends  CI_Controller  {
 	private function _generate_menu(){
 		$out = '';
 		$pages = array(
-			'Home'=>array('link'=>'home','sub'=>array()),
-			'News'=>array('link'=>'news','sub'=>array()),
+			'Home'=>array('link'=>'home'),
+			'News'=>array('link'=>'news'),
 			'Calendar'=>array('link'=>'calendar','sub'=>array('Events','National','Local','Robyn Chaplin')),
-			'Results'=>array('link'=>'results','sub'=>array()),
-			'Clubs'=>array('link'=>'clubs','sub'=>array()),
+			'Results'=>array('link'=>'results'),
+            'Rankings'=>array('link'=>'rankings'),
+			'Clubs'=>array('link'=>'clubs'),
 			'Rules'=>array('link'=>'rules','sub'=>array( 'Categories','Competitions','Entry Costs','Equipment','Team Competitions')),
-			'Forms and Resources'=>array('link'=>'info','sub'=>array()),
-			'Contact'=>array('link'=>'contact','sub'=>array())
+			'Forms and Resources'=>array('link'=>'info'),
+			'Contact'=>array('link'=>'contact')
 		);
 		
 		//Links to pages
 		foreach($pages as $name => $i){
 			$out .= "<li>\n\t".anchor($i['link'],$name);
-            if ($i['sub']) {
+            if (isset($i['sub'])) {
                 $out .= "\n<ul>";
                 foreach($i['sub'] as $j){
                     $out .= "\n<li>".anchor($i['link'].'/type/'.url_title($j),$j)."</li>";

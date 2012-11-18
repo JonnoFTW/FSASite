@@ -2,7 +2,7 @@
 <div class="grid_9">
     <div class="box">
 		<?
-            echo heading("Entrants for {$name}: ",2);
+            echo heading("Entrants for {$name} on {$date}: ",2);
         ?>
         <div class="block">
         <?

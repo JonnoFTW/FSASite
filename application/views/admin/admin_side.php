@@ -24,10 +24,11 @@
         );
         echo ul($pages,array('class'=>'menu'));
         $items[] = anchor('admin/results','Results Entry');
+        $items[] = anchor('admin/events/cancel','Cancel events');
         $items[] = anchor('admin/events/add','Add events');
     }
     
-    $items[] = anchor('admin/events/entry','Competition Entry');
+    $items[] = anchor('admin/events/entry','Competition Entry'); 
     echo heading(anchor("admin/events","Events"),5);
     echo ul($items,array('class'=>'menu'));
     

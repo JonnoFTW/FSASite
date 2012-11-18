@@ -30,6 +30,7 @@ class Results extends MY_Controller {
         else{
             $event = $result->row_array();
             $this->data['name'] = $event['name'];
+            $this->data['date'] = $event['date'];
             // Show the entrants and their result if it is set
             $this->db->select("users.first_name,users.last_name,users.uid, results.res, users.licensed");
             $this->db->order_by('results.res','asc');
